@@ -30,7 +30,7 @@ class Signin extends StatelessWidget {
                 ),
                 SizedBox(
                   width: 240,
-                  child: ElevatedButton(
+                  child: ElevatedButton.icon(
                       onPressed: () {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => const Home()));
@@ -39,13 +39,16 @@ class Signin extends StatelessWidget {
                         foregroundColor:
                             MaterialStateProperty.all<Color>(Colors.white),
                         backgroundColor: MaterialStateProperty.all<Color>(
-                            const Color(0xff049349)),
+                            CustomColors.primaryColor),
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(24))),
+                                    borderRadius: BorderRadius.circular(10))),
                       ),
-                      child: const Padding(
+                      icon: SizedBox(
+                          width: 26,
+                          child: Image.asset('assets/images/google.png')),
+                      label: const Padding(
                         padding: EdgeInsets.all(14),
                         child: Text(
                           'Continue with Google',
