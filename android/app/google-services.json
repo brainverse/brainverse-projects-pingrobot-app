@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "560806077220",
+    "project_id": "signin-405b4",
+    "storage_bucket": "signin-405b4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:560806077220:android:a399c5931003f597f809b1",
+        "android_client_info": {
+          "package_name": "com.example.pingrobot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "560806077220-2rqfes1f61eb2psh91q3t9fvlqgfkd3e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBobzkaD3cjE0oPwkG-gzJl5vpDNOOcj1Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "560806077220-2rqfes1f61eb2psh91q3t9fvlqgfkd3e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
