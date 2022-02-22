@@ -7,4 +7,5 @@ class CustomColors {
   static final whiteScaffold = Colors.white;
   static final black = Colors.black87;
   static final grey = Colors.black38;
+  static final red = Colors.red;
 }

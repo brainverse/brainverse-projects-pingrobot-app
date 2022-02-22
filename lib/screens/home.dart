@@ -1,7 +1,11 @@
+import 'dart:ui';
+
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:pingrobot/screens/notifications.dart';
 import 'package:pingrobot/theme/colors.dart';
+
+import '../util/urls.dart';
 
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
@@ -52,10 +56,7 @@ class Home extends StatelessWidget {
                 ))
           ],
         ),
-        body: SafeArea(
-            child: Center(
-          child: Text('Home'),
-        )),
+        body: SafeArea(child: _urlList()),
         floatingActionButton: FloatingActionButton(
           onPressed: () => showDialog(
               context: context,
@@ -112,6 +113,54 @@ class Home extends StatelessWidget {
           backgroundColor: CustomColors.primaryColor,
         ),
       ),
+    );
+  }
+
+  Widget _urlList() {
+    return ListView.builder(
+      itemCount: urls.length,
+      itemBuilder: (context, index) {
+        Map url = urls[index];
+        return Card(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.only(left: 10.0, top: 15.0, bottom: 15.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${url['name']}',
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                    ),
+                    SizedBox(
+                      height: 6,
+                    ),
+                    Text(
+                      '${url['url']}',
+                      style: TextStyle(color: CustomColors.grey),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                children: [
+                  IconButton(onPressed: null, icon: Icon(Icons.edit)),
+                  IconButton(
+                      onPressed: null,
+                      icon: Icon(
+                        Icons.close,
+                        color: CustomColors.red,
+                      )),
+                ],
+              )
+            ],
+          ),
+        );
+      },
     );
   }
 }
