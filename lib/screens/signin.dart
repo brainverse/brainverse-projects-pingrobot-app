@@ -43,11 +43,12 @@ class Signin extends StatelessWidget {
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10))),
+                                    borderRadius: BorderRadius.circular(18))),
                       ),
                       icon: SizedBox(
-                          width: 26,
-                          child: Image.asset('assets/images/google.png')),
+                          width: 34,
+                          child:
+                              Image.asset('assets/images/google_circle.png')),
                       label: const Padding(
                         padding: EdgeInsets.all(14),
                         child: Text(
