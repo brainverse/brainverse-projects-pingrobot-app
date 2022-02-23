@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:pingrobot/screens/notifications.dart';
@@ -7,9 +5,14 @@ import 'package:pingrobot/theme/colors.dart';
 
 import '../util/urls.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -148,11 +151,123 @@ class Home extends StatelessWidget {
               ),
               Row(
                 children: [
-                  IconButton(onPressed: null, icon: Icon(Icons.edit)),
                   IconButton(
-                      onPressed: null,
+                      onPressed: () => showDialog(
+                          context: context,
+                          builder: (context) {
+                            return StatefulBuilder(
+                              builder: (BuildContext context, dialogSetState) =>
+                                  AlertDialog(
+                                title: Text(
+                                  'Edit Domain',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: CustomColors.black),
+                                  textAlign: TextAlign.center,
+                                ),
+                                content: SizedBox(
+                                  height: 200,
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text(
+                                      'Cancel',
+                                      style:
+                                          TextStyle(color: CustomColors.grey),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      //send data to the db
+
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                        width: 200,
+                                        behavior: SnackBarBehavior.floating,
+                                        duration:
+                                            const Duration(milliseconds: 1500),
+                                        content: Text(
+                                          'Domain Successfully Edited',
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                        ),
+                                      ));
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      'Save',
+                                      style: TextStyle(
+                                          color: CustomColors.primaryColor),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
                       icon: Icon(
-                        Icons.close,
+                        Icons.edit,
+                        color: CustomColors.grey,
+                      )),
+                  IconButton(
+                      onPressed: () => showDialog(
+                          context: context,
+                          builder: (context) {
+                            return StatefulBuilder(
+                              builder: (BuildContext context, dialogSetState) =>
+                                  AlertDialog(
+                                content: Text(
+                                  'Are you sure you want to delete this domain?',
+                                  textAlign: TextAlign.center,
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text(
+                                      'Cancel',
+                                      style:
+                                          TextStyle(color: CustomColors.grey),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      //send data to the db
+                                      setState(() {
+                                        urls.removeAt(index);
+                                      });
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                        width: 200,
+                                        behavior: SnackBarBehavior.floating,
+                                        duration:
+                                            const Duration(milliseconds: 1500),
+                                        content: Text(
+                                          'Domain Successfully Deleted',
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                        ),
+                                      ));
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      'Yes',
+                                      style: TextStyle(
+                                          color: CustomColors.primaryColor),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                      icon: Icon(
+                        Icons.delete_forever,
                         color: CustomColors.red,
                       )),
                 ],
