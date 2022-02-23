@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "560806077220",
-    "project_id": "signin-405b4",
-    "storage_bucket": "signin-405b4.appspot.com"
+    "project_number": "1095496168132",
+    "project_id": "pingrobot-2aab5",
+    "storage_bucket": "pingrobot-2aab5.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:560806077220:android:a399c5931003f597f809b1",
+        "mobilesdk_app_id": "1:1095496168132:android:61d8f5c04269b347c2cf91",
         "android_client_info": {
           "package_name": "com.example.pingrobot"
         }
       },
       "oauth_client": [
         {
-          "client_id": "560806077220-2rqfes1f61eb2psh91q3t9fvlqgfkd3e.apps.googleusercontent.com",
+          "client_id": "1095496168132-q9s289gp645ugi072gu7qbs57vmfn4b5.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBobzkaD3cjE0oPwkG-gzJl5vpDNOOcj1Q"
+          "current_key": "AIzaSyBQLV7PkYSC_InFU8sbRIyNIDrI2IPWlwc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "560806077220-2rqfes1f61eb2psh91q3t9fvlqgfkd3e.apps.googleusercontent.com",
+              "client_id": "1095496168132-q9s289gp645ugi072gu7qbs57vmfn4b5.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
