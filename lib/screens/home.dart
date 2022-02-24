@@ -1,6 +1,8 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:pingrobot/screens/notifications.dart';
+import 'package:pingrobot/screens/signin.dart';
+import 'package:pingrobot/services/google_signin.dart';
 import 'package:pingrobot/theme/colors.dart';
 
 import '../util/urls.dart';
@@ -15,106 +17,216 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return Future.value(false);
-      },
-      child: Scaffold(
-        backgroundColor: CustomColors.lightGreyScaffold,
-        appBar: AppBar(
-          backgroundColor: CustomColors.primaryColor,
-          automaticallyImplyLeading: false,
-          title: Text('PingRobot'),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const Notifications()));
-                },
-                icon: Badge(
-                  showBadge: true,
-                  position: BadgePosition.topEnd(top: 1, end: 1),
-                  child: Icon(
-                    Icons.notifications,
-                    color: CustomColors.white,
-                  ),
-                )),
-            IconButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(5),
-                      )),
-                      context: context,
-                      builder: (BuildContext context) {
-                        return FractionallySizedBox(
-                            heightFactor: 0.4, child: SizedBox());
-                      },
-                      isScrollControlled: true);
-                },
-                icon: Icon(
-                  Icons.more_vert,
+    return Scaffold(
+      backgroundColor: CustomColors.lightGreyScaffold,
+      appBar: AppBar(
+        backgroundColor: CustomColors.primaryColor,
+        automaticallyImplyLeading: false,
+        title: Text('PingRobot'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const Notifications()));
+              },
+              icon: Badge(
+                showBadge: true,
+                position: BadgePosition.topEnd(top: 1, end: 1),
+                child: Icon(
+                  Icons.notifications,
                   color: CustomColors.white,
-                ))
-          ],
-        ),
-        body: SafeArea(child: _urlList()),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => showDialog(
-              context: context,
-              builder: (context) {
-                return StatefulBuilder(
-                  builder: (BuildContext context, dialogSetState) =>
-                      AlertDialog(
-                    title: Text(
-                      'Create Domain',
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: CustomColors.black),
-                      textAlign: TextAlign.center,
-                    ),
-                    content: SizedBox(
-                      height: 200,
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(
-                          'Cancel',
-                          style: TextStyle(color: CustomColors.grey),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          //send data to the db
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            width: 200,
-                            behavior: SnackBarBehavior.floating,
-                            duration: const Duration(milliseconds: 1500),
-                            content: Text(
-                              'Domain Successfully Created',
-                              textAlign: TextAlign.center,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15.0),
+                ),
+              )),
+          IconButton(
+              onPressed: () {
+                showModalBottomSheet(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(5),
+                    )),
+                    context: context,
+                    builder: (BuildContext context) {
+                      return FractionallySizedBox(
+                          heightFactor: 0.4,
+                          child: SizedBox(
+                            child: Column(
+                              children: [
+                                Expanded(child: SizedBox()),
+                                ListTile(
+                                  leading: Icon(Icons.logout),
+                                  title: Text('Signout'),
+                                  onTap: () {
+                                    GoogleSigninService googleSigninService =
+                                        GoogleSigninService();
+                                    googleSigninService
+                                        .googleSignout()
+                                        .whenComplete(() =>
+                                            Navigator.of(context)
+                                                .pushAndRemoveUntil(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const Signin()),
+                                                    (Route<dynamic> route) =>
+                                                        false));
+                                    ;
+                                  },
+                                ),
+                              ],
                             ),
                           ));
-                          Navigator.pop(context);
-                        },
-                        child: Text(
-                          'Save',
-                          style: TextStyle(color: CustomColors.primaryColor),
-                        ),
-                      ),
-                    ],
+                    },
+                    isScrollControlled: true);
+              },
+              icon: Icon(
+                Icons.more_vert,
+                color: CustomColors.white,
+              ))
+        ],
+      ),
+      body: SafeArea(child: _urlList()),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => showDialog(
+            context: context,
+            builder: (context) {
+              return StatefulBuilder(
+                builder: (BuildContext context, dialogSetState) => AlertDialog(
+                  title: Text(
+                    'Create Domain',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: CustomColors.black),
+                    textAlign: TextAlign.center,
                   ),
-                );
-              }),
-          child: Icon(Icons.add),
-          backgroundColor: CustomColors.primaryColor,
-        ),
+                  content: SizedBox(
+                    height: 125,
+                    child: Form(
+                        child: Column(
+                      children: [
+                        TextFormField(
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Website Name is required";
+                            } else {
+                              return null;
+                            }
+                          },
+                          onSaved: (String? value) {},
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: const Color(0xffF0F0F0),
+                            label: RichText(
+                                text: const TextSpan(children: [
+                              TextSpan(
+                                  text: 'Website Name',
+                                  style: TextStyle(
+                                      color: Color(0xff606060),
+                                      fontFamily: 'Arial Rounded',
+                                      fontSize: 14)),
+                              TextSpan(
+                                  text: ' *',
+                                  style: TextStyle(
+                                      color: Colors.red,
+                                      fontFamily: 'Arial Rounded'))
+                            ])),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    const BorderSide(color: Colors.black12),
+                                borderRadius: BorderRadius.circular(10)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black12),
+                                borderRadius: BorderRadius.circular(10)),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        TextFormField(
+                          // controller: businessNameController,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Website Url/Ip is required";
+                            } else {
+                              return null;
+                            }
+                          },
+                          onSaved: (String? value) {},
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: const Color(0xffF0F0F0),
+                            label: RichText(
+                                text: const TextSpan(children: [
+                              TextSpan(
+                                  text: 'Website Url/Ip',
+                                  style: TextStyle(
+                                      color: Color(0xff606060),
+                                      fontFamily: 'Arial Rounded',
+                                      fontSize: 14)),
+                              TextSpan(
+                                  text: ' *',
+                                  style: TextStyle(
+                                      color: Colors.red,
+                                      fontFamily: 'Arial Rounded'))
+                            ])),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    const BorderSide(color: Colors.black12),
+                                borderRadius: BorderRadius.circular(10)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide:
+                                    const BorderSide(color: Colors.black12),
+                                borderRadius: BorderRadius.circular(10)),
+                          ),
+                        ),
+                      ],
+                    )),
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(color: CustomColors.grey),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        //send data to the db
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          width: 200,
+                          behavior: SnackBarBehavior.floating,
+                          duration: const Duration(milliseconds: 1500),
+                          content: Text(
+                            'Domain Successfully Created',
+                            textAlign: TextAlign.center,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                        ));
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        'Save',
+                        style: TextStyle(color: CustomColors.primaryColor),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+        child: Icon(Icons.add),
+        backgroundColor: CustomColors.primaryColor,
       ),
     );
   }
