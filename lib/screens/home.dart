@@ -51,50 +51,86 @@ class _HomeState extends State<Home> {
                   color: CustomColors.white,
                 ),
               )),
-          IconButton(
-              onPressed: () {
-                showModalBottomSheet(
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(5),
-                    )),
-                    context: context,
-                    builder: (BuildContext context) {
-                      return FractionallySizedBox(
-                          heightFactor: 0.4,
-                          child: SizedBox(
-                            child: Column(
-                              children: [
-                                Expanded(child: SizedBox()),
-                                ListTile(
-                                  leading: Icon(Icons.logout),
-                                  title: Text('Signout'),
-                                  onTap: () {
-                                    GoogleSigninService googleSigninService =
-                                        GoogleSigninService();
-                                    googleSigninService
-                                        .googleSignout()
-                                        .whenComplete(() =>
-                                            Navigator.of(context)
-                                                .pushAndRemoveUntil(
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            const Signin()),
-                                                    (Route<dynamic> route) =>
-                                                        false));
-                                    ;
-                                  },
-                                ),
-                              ],
-                            ),
-                          ));
-                    },
-                    isScrollControlled: true);
-              },
-              icon: Icon(
-                Icons.more_vert,
-                color: CustomColors.white,
-              ))
+          PopupMenuButton(
+            // offset: ,
+            onSelected: (result) {
+              if (result == 'Signout') {
+                GoogleSigninService googleSigninService = GoogleSigninService();
+                googleSigninService.googleSignout().whenComplete(() =>
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) => const Signin()),
+                        (Route<dynamic> route) => false));
+              } else if (result == 'About') {
+              } else {}
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+              const PopupMenuItem(
+                value: 'About',
+                child: ListTile(
+                  leading: Icon(Icons.info_outline),
+                  title: Text('About'),
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'Help',
+                child: ListTile(
+                  leading: Icon(Icons.question_mark),
+                  title: Text('Help'),
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'Signout',
+                child: ListTile(
+                  leading: Icon(Icons.logout),
+                  title: Text('Signout'),
+                ),
+              ),
+            ],
+          )
+          // IconButton(
+          //     onPressed: () {
+          //       showModalBottomSheet(
+          //           shape: const RoundedRectangleBorder(
+          //               borderRadius: BorderRadius.vertical(
+          //             top: Radius.circular(5),
+          //           )),
+          //           context: context,
+          //           builder: (BuildContext context) {
+          //             return FractionallySizedBox(
+          //                 heightFactor: 0.4,
+          //                 child: SizedBox(
+          //                   child: Column(
+          //                     children: [
+          //                       Expanded(child: SizedBox()),
+          //                       ListTile(
+          //                         leading: Icon(Icons.logout),
+          //                         title: Text('Signout'),
+          //                         onTap: () {
+          //                           GoogleSigninService googleSigninService =
+          //                               GoogleSigninService();
+          //                           googleSigninService
+          //                               .googleSignout()
+          //                               .whenComplete(() =>
+          //                                   Navigator.of(context)
+          //                                       .pushAndRemoveUntil(
+          //                                           MaterialPageRoute(
+          //                                               builder: (context) =>
+          //                                                   const Signin()),
+          //                                           (Route<dynamic> route) =>
+          //                                               false));
+          //                           ;
+          //                         },
+          //                       ),
+          //                     ],
+          //                   ),
+          //                 ));
+          //           },
+          //           isScrollControlled: true);
+          //     },
+          //     icon: Icon(
+          //       Icons.more_vert,
+          //       color: CustomColors.white,
+          //     ))
         ],
       ),
       body: SafeArea(child: _urlList()),
