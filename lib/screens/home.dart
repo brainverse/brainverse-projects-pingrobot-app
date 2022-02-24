@@ -15,6 +15,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final formKey = GlobalKey<FormState>();
+  final formKeyEdit = GlobalKey<FormState>();
+  TextEditingController websiteNameController = TextEditingController();
+  TextEditingController websiteUrlController = TextEditingController();
+  String websiteName = '';
+  String websiteUrl = '';
+
+  @override
+  void dispose() {
+    websiteNameController.dispose();
+    websiteUrlController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,98 +112,104 @@ class _HomeState extends State<Home> {
                         color: CustomColors.black),
                     textAlign: TextAlign.center,
                   ),
-                  content: SizedBox(
-                    height: 125,
+                  content: SingleChildScrollView(
                     child: Form(
+                        key: formKey,
                         child: Column(
-                      children: [
-                        TextFormField(
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Website Name is required";
-                            } else {
-                              return null;
-                            }
-                          },
-                          onSaved: (String? value) {},
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: const Color(0xffF0F0F0),
-                            label: RichText(
-                                text: const TextSpan(children: [
-                              TextSpan(
-                                  text: 'Website Name',
-                                  style: TextStyle(
-                                      color: Color(0xff606060),
-                                      fontFamily: 'Arial Rounded',
-                                      fontSize: 14)),
-                              TextSpan(
-                                  text: ' *',
-                                  style: TextStyle(
-                                      color: Colors.red,
-                                      fontFamily: 'Arial Rounded'))
-                            ])),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    const BorderSide(color: Colors.black12),
-                                borderRadius: BorderRadius.circular(10)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black12),
-                                borderRadius: BorderRadius.circular(10)),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 12,
-                        ),
-                        TextFormField(
-                          // controller: businessNameController,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Website Url/Ip is required";
-                            } else {
-                              return null;
-                            }
-                          },
-                          onSaved: (String? value) {},
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: const Color(0xffF0F0F0),
-                            label: RichText(
-                                text: const TextSpan(children: [
-                              TextSpan(
-                                  text: 'Website Url/Ip',
-                                  style: TextStyle(
-                                      color: Color(0xff606060),
-                                      fontFamily: 'Arial Rounded',
-                                      fontSize: 14)),
-                              TextSpan(
-                                  text: ' *',
-                                  style: TextStyle(
-                                      color: Colors.red,
-                                      fontFamily: 'Arial Rounded'))
-                            ])),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    const BorderSide(color: Colors.black12),
-                                borderRadius: BorderRadius.circular(10)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide:
-                                    const BorderSide(color: Colors.black12),
-                                borderRadius: BorderRadius.circular(10)),
-                          ),
-                        ),
-                      ],
-                    )),
+                          children: [
+                            TextFormField(
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Website Name is required";
+                                } else {
+                                  return null;
+                                }
+                              },
+                              onSaved: (String? value) {
+                                websiteName = value!;
+                              },
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: const Color(0xffF0F0F0),
+                                label: RichText(
+                                    text: const TextSpan(children: [
+                                  TextSpan(
+                                      text: 'Website Name',
+                                      style: TextStyle(
+                                          color: Color(0xff606060),
+                                          fontFamily: 'Arial Rounded',
+                                          fontSize: 14)),
+                                  TextSpan(
+                                      text: ' *',
+                                      style: TextStyle(
+                                          color: Colors.red,
+                                          fontFamily: 'Arial Rounded'))
+                                ])),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                enabledBorder: OutlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: Colors.black12),
+                                    borderRadius: BorderRadius.circular(10)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.black12),
+                                    borderRadius: BorderRadius.circular(10)),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            TextFormField(
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Website Url/Ip is required";
+                                } else {
+                                  return null;
+                                }
+                              },
+                              onSaved: (String? value) {
+                                websiteUrl = value!;
+                              },
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: const Color(0xffF0F0F0),
+                                label: RichText(
+                                    text: const TextSpan(children: [
+                                  TextSpan(
+                                      text: 'Website Url/Ip',
+                                      style: TextStyle(
+                                          color: Color(0xff606060),
+                                          fontFamily: 'Arial Rounded',
+                                          fontSize: 14)),
+                                  TextSpan(
+                                      text: ' *',
+                                      style: TextStyle(
+                                          color: Colors.red,
+                                          fontFamily: 'Arial Rounded'))
+                                ])),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                enabledBorder: OutlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: Colors.black12),
+                                    borderRadius: BorderRadius.circular(10)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: Colors.black12),
+                                    borderRadius: BorderRadius.circular(10)),
+                              ),
+                            ),
+                          ],
+                        )),
                   ),
                   actions: <Widget>[
                     TextButton(
@@ -201,20 +221,27 @@ class _HomeState extends State<Home> {
                     ),
                     TextButton(
                       onPressed: () {
-                        //send data to the db
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          width: 200,
-                          behavior: SnackBarBehavior.floating,
-                          duration: const Duration(milliseconds: 1500),
-                          content: Text(
-                            'Domain Successfully Created',
-                            textAlign: TextAlign.center,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                        ));
-                        Navigator.pop(context);
+                        if (formKey.currentState!.validate()) {
+                          formKey.currentState!.save();
+                          //send data to the db
+                          setState(() {
+                            urls.insert(
+                                0, {'name': websiteName, 'url': websiteUrl});
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            width: 200,
+                            behavior: SnackBarBehavior.floating,
+                            duration: const Duration(milliseconds: 1500),
+                            content: Text(
+                              'Domain Successfully Created',
+                              textAlign: TextAlign.center,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                          ));
+                          Navigator.pop(context);
+                        }
                       },
                       child: Text(
                         'Save',
@@ -267,33 +294,151 @@ class _HomeState extends State<Home> {
                       onPressed: () => showDialog(
                           context: context,
                           builder: (context) {
-                            return StatefulBuilder(
-                              builder: (BuildContext context, dialogSetState) =>
-                                  AlertDialog(
-                                title: Text(
-                                  'Edit Domain',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: CustomColors.black),
-                                  textAlign: TextAlign.center,
-                                ),
-                                content: SizedBox(
-                                  height: 200,
-                                ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: Text(
-                                      'Cancel',
-                                      style:
-                                          TextStyle(color: CustomColors.grey),
-                                    ),
+                            websiteNameController.text = url['name'];
+                            websiteUrlController.text = url['url'];
+                            return AlertDialog(
+                              title: Text(
+                                'Edit Domain',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: CustomColors.black),
+                                textAlign: TextAlign.center,
+                              ),
+                              content: SingleChildScrollView(
+                                child: Form(
+                                    key: formKeyEdit,
+                                    child: Column(
+                                      children: [
+                                        TextFormField(
+                                          controller: websiteNameController,
+                                          autovalidateMode: AutovalidateMode
+                                              .onUserInteraction,
+                                          validator: (value) {
+                                            if (value!.isEmpty) {
+                                              return "Website Name is required";
+                                            } else {
+                                              return null;
+                                            }
+                                          },
+                                          onSaved: (String? value) {
+                                            websiteName = value!;
+                                          },
+                                          style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                          decoration: InputDecoration(
+                                            filled: true,
+                                            fillColor: const Color(0xffF0F0F0),
+                                            label: RichText(
+                                                text: const TextSpan(children: [
+                                              TextSpan(
+                                                  text: 'Website Name',
+                                                  style: TextStyle(
+                                                      color: Color(0xff606060),
+                                                      fontFamily:
+                                                          'Arial Rounded',
+                                                      fontSize: 14)),
+                                              TextSpan(
+                                                  text: ' *',
+                                                  style: TextStyle(
+                                                      color: Colors.red,
+                                                      fontFamily:
+                                                          'Arial Rounded'))
+                                            ])),
+                                            border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            enabledBorder: OutlineInputBorder(
+                                                borderSide: const BorderSide(
+                                                    color: Colors.black12),
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.black12),
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 12,
+                                        ),
+                                        TextFormField(
+                                          controller: websiteUrlController,
+                                          autovalidateMode: AutovalidateMode
+                                              .onUserInteraction,
+                                          validator: (value) {
+                                            if (value!.isEmpty) {
+                                              return "Website Url/Ip is required";
+                                            } else {
+                                              return null;
+                                            }
+                                          },
+                                          onSaved: (String? value) {
+                                            websiteUrl = value!;
+                                          },
+                                          style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                          decoration: InputDecoration(
+                                            filled: true,
+                                            fillColor: const Color(0xffF0F0F0),
+                                            label: RichText(
+                                                text: const TextSpan(children: [
+                                              TextSpan(
+                                                  text: 'Website Url/Ip',
+                                                  style: TextStyle(
+                                                      color: Color(0xff606060),
+                                                      fontFamily:
+                                                          'Arial Rounded',
+                                                      fontSize: 14)),
+                                              TextSpan(
+                                                  text: ' *',
+                                                  style: TextStyle(
+                                                      color: Colors.red,
+                                                      fontFamily:
+                                                          'Arial Rounded'))
+                                            ])),
+                                            border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            enabledBorder: OutlineInputBorder(
+                                                borderSide: const BorderSide(
+                                                    color: Colors.black12),
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            focusedBorder: OutlineInputBorder(
+                                                borderSide: const BorderSide(
+                                                    color: Colors.black12),
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                          ),
+                                        ),
+                                      ],
+                                    )),
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text(
+                                    'Cancel',
+                                    style: TextStyle(color: CustomColors.grey),
                                   ),
-                                  TextButton(
-                                    onPressed: () {
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    if (formKeyEdit.currentState!.validate()) {
+                                      formKeyEdit.currentState!.save();
                                       //send data to the db
-
+                                      setState(() {
+                                        urls.forEach((element) {
+                                          if (element['id'] == url['id']) {
+                                            element['name'] = websiteName;
+                                            element['url'] = websiteUrl;
+                                          }
+                                        });
+                                      });
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
                                         width: 200,
@@ -310,15 +455,15 @@ class _HomeState extends State<Home> {
                                         ),
                                       ));
                                       Navigator.pop(context);
-                                    },
-                                    child: Text(
-                                      'Save',
-                                      style: TextStyle(
-                                          color: CustomColors.primaryColor),
-                                    ),
+                                    }
+                                  },
+                                  child: Text(
+                                    'Save',
+                                    style: TextStyle(
+                                        color: CustomColors.primaryColor),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             );
                           }),
                       icon: Icon(
