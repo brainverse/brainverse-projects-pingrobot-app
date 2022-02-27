@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pingrobot/screens/signin.dart';
+import 'package:pingrobot/screens/initializer.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'PingRobot',
       debugShowCheckedModeBanner: false,
-      home: Signin(),
+      home: Initializer(),
       scrollBehavior: MyBehavior(),
     );
   }
