@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pingrobot/screens/home.dart';
 import 'package:pingrobot/services/google_signin.dart';
@@ -45,20 +46,25 @@ class _SigninState extends State<Signin> {
                           SizedBox(
                             width: 240,
                             child: ElevatedButton.icon(
-                                onPressed: () {
+                                onPressed: () async {
                                   setState(() {
                                     isLoading = true;
                                   });
                                   GoogleSigninService googleSigninService =
                                       GoogleSigninService();
-                                  googleSigninService
-                                      .googleSignin()
-                                      .whenComplete(() {
+                                  await googleSigninService.googleSignin();
+                                  if (FirebaseAuth.instance.currentUser !=
+                                      null) {
                                     Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 const Home()));
-                                  });
+                                  } else {
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                  }
+
                                   //implement errors and exceptions
                                 },
                                 style: ButtonStyle(
