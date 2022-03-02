@@ -652,8 +652,41 @@ class _HomeState extends State<Home> {
             color: CustomColors.primaryColor,
           ));
         } else {
-          return const Center(
-            child: Text('Empty Screen'),
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.language,
+                    size: 55,
+                    color: CustomColors.grey,
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    'You\'ve got nothing here.',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 22,
+                        color: CustomColors.black),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    'Looks like you haven\'t added websites yet. Add some to start monitoring.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: CustomColors.grey,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           );
         }
       },
