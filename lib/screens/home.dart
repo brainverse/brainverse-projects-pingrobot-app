@@ -646,6 +646,11 @@ class _HomeState extends State<Home> {
               );
             },
           );
+        } else if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+              child: CircularProgressIndicator(
+            color: CustomColors.primaryColor,
+          ));
         } else {
           return const Center(
             child: Text('Empty Screen'),
