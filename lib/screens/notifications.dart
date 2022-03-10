@@ -156,9 +156,18 @@ class _NotificationsState extends State<Notifications> {
                         userNotificationsRef
                             .child('${unread[index]['id']}')
                             .remove();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Notification Deleted')));
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          width: 200,
+                          behavior: SnackBarBehavior.floating,
+                          duration: const Duration(milliseconds: 1500),
+                          content: Text(
+                            'Notification Deleted',
+                            textAlign: TextAlign.center,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                        ));
                       },
                       background: Container(
                         child: Row(
@@ -237,9 +246,18 @@ class _NotificationsState extends State<Notifications> {
                         userNotificationsRef
                             .child('${read[index]['id']}')
                             .remove();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Notification Deleted')));
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          width: 200,
+                          behavior: SnackBarBehavior.floating,
+                          duration: const Duration(milliseconds: 1500),
+                          content: Text(
+                            'Notification Deleted',
+                            textAlign: TextAlign.center,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                        ));
                       },
                       background: Container(
                         child: Row(
