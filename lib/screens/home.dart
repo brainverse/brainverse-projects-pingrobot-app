@@ -176,7 +176,22 @@ class _HomeState extends State<Home> {
                                 if (value!.isEmpty) {
                                   return "Website Url/Ip is required";
                                 } else {
-                                  return null;
+                                  // domain ip check
+                                  RegExp ipExp = new RegExp(
+                                      r"^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$",
+                                      caseSensitive: false,
+                                      multiLine: false);
+                                  RegExp domainExp = RegExp(
+                                      r"^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}$");
+                                  RegExp urlExp = RegExp(
+                                      r"(http|https)://[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?");
+                                  if (ipExp.hasMatch(value) ||
+                                      domainExp.hasMatch(value) ||
+                                      urlExp.hasMatch(value)) {
+                                    return null;
+                                  } else {
+                                    return "Invalid webisite Url/Ip";
+                                  }
                                 }
                               },
                               onSaved: (String? value) {
