@@ -1,6 +1,7 @@
 import 'package:badges/badges.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:pingrobot/screens/notifications.dart';
 import 'package:pingrobot/screens/signin.dart';
@@ -22,13 +23,16 @@ class _HomeState extends State<Home> {
   String websiteName = '';
   String websiteUrl = '';
   late final userUrlsRef;
+  late final database;
+  late final userId;
 
   @override
   void initState() {
     super.initState();
-    final database = FirebaseDatabase.instance.ref();
-    final userId = FirebaseAuth.instance.currentUser!.uid;
+    database = FirebaseDatabase.instance.ref();
+    userId = FirebaseAuth.instance.currentUser!.uid;
     userUrlsRef = database.child('userUrls/$userId');
+    _saveDeviceToken();
   }
 
   @override
@@ -691,5 +695,12 @@ class _HomeState extends State<Home> {
         }
       },
     );
+  }
+
+  _saveDeviceToken() async {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    if (fcmToken != null) {
+      database.child('userFcmTokens/$userId').set(fcmToken);
+    }
   }
 }
