@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:pingrobot/screens/about.dart';
 import 'package:pingrobot/screens/notifications.dart';
 import 'package:pingrobot/screens/signin.dart';
 import 'package:pingrobot/services/google_signin.dart';
@@ -74,7 +75,9 @@ class _HomeState extends State<Home> {
                         MaterialPageRoute(builder: (context) => const Signin()),
                         (Route<dynamic> route) => false));
               } else if (result == 'About') {
-              } else {}
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const About()));
+              }
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry>[
               const PopupMenuItem(
@@ -84,13 +87,13 @@ class _HomeState extends State<Home> {
                   title: Text('About'),
                 ),
               ),
-              const PopupMenuItem(
-                value: 'Help',
-                child: ListTile(
-                  leading: Icon(Icons.question_mark),
-                  title: Text('Help'),
-                ),
-              ),
+              // const PopupMenuItem(
+              //   value: 'Help',
+              //   child: ListTile(
+              //     leading: Icon(Icons.question_mark),
+              //     title: Text('Help'),
+              //   ),
+              // ),
               const PopupMenuItem(
                 value: 'Signout',
                 child: ListTile(
