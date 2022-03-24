@@ -309,6 +309,7 @@ class _HomeState extends State<Home> {
             nextUrl['id'] = key;
             urls.add(nextUrl);
           });
+          urls.sort((a, b) => b['timestamp'].compareTo(a['timestamp']));
 
           return ListView.builder(
             itemCount: urls.length,

@@ -146,6 +146,7 @@ class _NotificationsState extends State<Notifications> {
             if (unread.isEmpty) {
               return _nothingHere('Unread');
             } else {
+              unread.sort((a, b) => b['timestamp'].compareTo(a['timestamp']));
               return ListView.builder(
                 shrinkWrap: true,
                 itemCount: unread.length,
@@ -236,6 +237,7 @@ class _NotificationsState extends State<Notifications> {
             if (read.isEmpty) {
               return _nothingHere('Read');
             } else {
+              read.sort((a, b) => b['timestamp'].compareTo(a['timestamp']));
               return ListView.builder(
                 shrinkWrap: true,
                 itemCount: read.length,
