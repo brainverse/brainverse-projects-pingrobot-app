@@ -4,8 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-// import 'screens/notifications.dart';
-
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_priority_channel', // id
     'High Priority Notifications', // title
