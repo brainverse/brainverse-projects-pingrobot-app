@@ -2,30 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:pingrobot/screens/initializer.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:pingrobot/screens/notifications.dart';
-import 'package:pingrobot/services/local_notification.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  // await Firebase.initializeApp();
+  RemoteNotification? notification = message.notification;
+  AndroidNotification? android = message.notification?.android;
+  if (notification != null && android != null) {
+    await AwesomeNotifications().createNotification(
+        content: NotificationContent(
+      id: message.notification.hashCode,
+      channelKey: 'Key',
+      title: message.notification!.title,
+      body: message.notification!.body,
+    ));
+  }
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  LocalNotificationService().initialize();
+  AwesomeNotifications().initialize('resource://drawable/pingrobot', [
+    NotificationChannel(
+      channelKey: 'Key',
+      channelName: 'high_priority_channel',
+      channelDescription: 'High Priority Notifications',
+      importance: NotificationImportance.High,
+      enableLights: true,
+      ledColor: Colors.white,
+      playSound: true,
+      soundSource: 'resource://raw/res_notification_sound',
+      enableVibration: true,
+    )
+  ]);
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  // await flutterLocalNotificationsPlugin
-  //     .resolvePlatformSpecificImplementation<
-  //         AndroidFlutterLocalNotificationsPlugin>()
-  //     ?.createNotificationChannel(channel);
-
-  // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-  //   alert: true,
-  //   badge: true,
-  //   sound: true,
-  // );
   runApp(const MyApp());
 }
 
@@ -55,29 +66,49 @@ class _MyAppInitState extends State<MyAppInit> {
   void initState() {
     super.initState();
 
-    FirebaseMessaging.instance.getInitialMessage().then((message) {
-      if (message != null) {
-        RemoteNotification? notification = message.notification;
-        AndroidNotification? android = message.notification?.android;
-        if (notification != null && android != null) {
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const Notifications()));
-        }
-      }
-    });
+    // FirebaseMessaging.instance.getInitialMessage().then((message) {
+    //   if (message != null) {
+    //     RemoteNotification? notification = message.notification;
+    //     AndroidNotification? android = message.notification?.android;
+    //     if (notification != null && android != null) {
+    //       Navigator.of(context).pushAndRemoveUntil(
+    //         MaterialPageRoute(builder: (context) => const Notifications()),
+    //         (route) => route.isFirst,
+    //       );
+    //     }
+    //   }
+    // });
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      LocalNotificationService().display(message);
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
       if (notification != null && android != null) {
-        Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const Notifications()));
+        await AwesomeNotifications().createNotification(
+            content: NotificationContent(
+          id: message.notification.hashCode,
+          channelKey: 'Key',
+          title: message.notification!.title,
+          body: message.notification!.body,
+        ));
       }
     });
+
+    // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    //   RemoteNotification? notification = message.notification;
+    //   AndroidNotification? android = message.notification?.android;
+    //   if (notification != null && android != null) {
+    //     Navigator.of(context).pushAndRemoveUntil(
+    //       MaterialPageRoute(builder: (context) => const Notifications()),
+    //       (route) => route.isFirst,
+    //     );
+    //   }
+    // });
+  }
+
+  @override
+  void dispose() {
+    AwesomeNotifications().actionSink.close();
+    super.dispose();
   }
 
   @override

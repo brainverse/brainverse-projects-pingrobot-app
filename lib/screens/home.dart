@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:badges/badges.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -30,6 +31,56 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    AwesomeNotifications().isNotificationAllowed().then((value) {
+      if (value == false) {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text(
+                    'Allow Notifications',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: CustomColors.black),
+                    textAlign: TextAlign.center,
+                  ),
+                  content: Text(
+                    'Our app would like to send you notifications',
+                    textAlign: TextAlign.center,
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        'Don\'t Allow',
+                        style: TextStyle(color: CustomColors.grey),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        AwesomeNotifications()
+                            .requestPermissionToSendNotifications()
+                            .then((_) => Navigator.pop(context));
+                      },
+                      child: Text(
+                        'Allow',
+                        style: TextStyle(color: CustomColors.primaryColor),
+                      ),
+                    ),
+                  ],
+                ));
+      }
+    });
+
+    AwesomeNotifications().actionStream.listen((event) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const Notifications()),
+        (route) => route.isFirst,
+      );
+    });
+
     database = FirebaseDatabase.instance.ref();
     userId = FirebaseAuth.instance.currentUser!.uid;
     userUrlsRef = database.child('userUrls/$userId');
