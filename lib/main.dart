@@ -3,20 +3,21 @@ import 'package:pingrobot/screens/initializer.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:pingrobot/screens/notifications.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // await Firebase.initializeApp();
-  RemoteNotification? notification = message.notification;
-  AndroidNotification? android = message.notification?.android;
-  if (notification != null && android != null) {
-    await AwesomeNotifications().createNotification(
-        content: NotificationContent(
-      id: message.notification.hashCode,
-      channelKey: 'Key',
-      title: message.notification!.title,
-      body: message.notification!.body,
-    ));
-  }
+  await Firebase.initializeApp();
+  // RemoteNotification? notification = message.notification;
+  // AndroidNotification? android = message.notification?.android;
+  // if (notification != null && android != null) {
+  //   await AwesomeNotifications().createNotification(
+  //       content: NotificationContent(
+  //     id: message.notification.hashCode,
+  //     channelKey: 'Key',
+  //     title: message.notification!.title,
+  //     body: message.notification!.body,
+  //   ));
+  // }
 }
 
 void main() async {
@@ -93,16 +94,23 @@ class _MyAppInitState extends State<MyAppInit> {
       }
     });
 
-    // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    //   RemoteNotification? notification = message.notification;
-    //   AndroidNotification? android = message.notification?.android;
-    //   if (notification != null && android != null) {
-    //     Navigator.of(context).pushAndRemoveUntil(
-    //       MaterialPageRoute(builder: (context) => const Notifications()),
-    //       (route) => route.isFirst,
-    //     );
-    //   }
-    // });
+    AwesomeNotifications().actionStream.listen((event) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const Notifications()),
+        (route) => route.isFirst,
+      );
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const Notifications()),
+          (route) => route.isFirst,
+        );
+      }
+    });
   }
 
   @override

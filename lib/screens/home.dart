@@ -74,12 +74,6 @@ class _HomeState extends State<Home> {
       }
     });
 
-    AwesomeNotifications().actionStream.listen((event) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const Notifications()),
-        (route) => route.isFirst,
-      );
-    });
 
     database = FirebaseDatabase.instance.ref();
     userId = FirebaseAuth.instance.currentUser!.uid;
@@ -91,6 +85,7 @@ class _HomeState extends State<Home> {
   void dispose() {
     websiteNameController.dispose();
     websiteUrlController.dispose();
+    AwesomeNotifications().actionSink.close();
     super.dispose();
   }
 
