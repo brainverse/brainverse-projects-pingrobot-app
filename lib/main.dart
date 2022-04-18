@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:pingrobot/screens/initializer.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -22,6 +24,13 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // final Int64List vibrationPattern = Int64List(5);
+  // vibrationPattern[0] = 0;
+  // vibrationPattern[1] = 1000;
+  // vibrationPattern[2] = 5000;
+  // vibrationPattern[3] = 2000;
+  // vibrationPattern[4] = 2000;
+
   AwesomeNotifications().initialize('resource://drawable/pingrobot', [
     NotificationChannel(
       channelKey: 'Key',
@@ -31,8 +40,9 @@ void main() async {
       enableLights: true,
       ledColor: Colors.white,
       playSound: true,
-      soundSource: 'resource://raw/res_notification_sound',
+      soundSource: 'resource://raw/cheerful',
       enableVibration: true,
+      // vibrationPattern: vibrationPattern,
     )
   ]);
   await Firebase.initializeApp();
