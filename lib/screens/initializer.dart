@@ -21,7 +21,6 @@ class _InitializerState extends State<Initializer> {
     super.initState();
     _auth = FirebaseAuth.instance;
     _user = _auth.currentUser;
-    // isVerifying = false;
     Future.delayed(const Duration(milliseconds: 1000), () {
       setState(() {
         isVerifying = false;
