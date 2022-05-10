@@ -1,7 +1,6 @@
 import 'package:badges/badges.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pingrobot/screens/about.dart';
@@ -231,7 +230,6 @@ class _SinglePropertyState extends State<SingleProperty> {
                                   ),
                                   TextButton(
                                     onPressed: () async {
-                                      //send data to the db
                                       try {
                                         await userUrlsRef
                                             .child(widget.property['id'])
@@ -346,10 +344,6 @@ class _SinglePropertyState extends State<SingleProperty> {
                 (snapshot.data! as DatabaseEvent).snapshot.value as Map;
             mapOfUrls.forEach((key, value) {
               final nextUnread = Map.from(value);
-              // if (nextUnread['title'] == widget.property['name']) {
-              //   nextUnread['id'] = key;
-              //   unread.add(nextUnread);
-              // }
               if (nextUnread['url'] == widget.property['id']) {
                 nextUnread['id'] = key;
                 unread.add(nextUnread);
@@ -465,10 +459,6 @@ class _SinglePropertyState extends State<SingleProperty> {
         ),
       ),
     );
-  }
-
-  _userName() {
-    return FirebaseAuth.instance.currentUser!.displayName!.split(" ")[0];
   }
 
   _editProperty() {
@@ -595,14 +585,6 @@ class _SinglePropertyState extends State<SingleProperty> {
                     ),
                     TextFormField(
                       controller: websiteDescriptionController,
-                      // autovalidateMode: AutovalidateMode.onUserInteraction,
-                      // validator: (value) {
-                      //   if (value!.isEmpty) {
-                      //     return "Property Description is required";
-                      //   } else {
-                      //     return null;
-                      //   }
-                      // },
                       onSaved: (String? value) {
                         websiteDescription = value!;
                       },
@@ -619,11 +601,6 @@ class _SinglePropertyState extends State<SingleProperty> {
                                   color: Color(0xff606060),
                                   fontFamily: 'Arial Rounded',
                                   fontSize: 14)),
-                          // TextSpan(
-                          //     text: ' *',
-                          //     style: TextStyle(
-                          //         color: Colors.red,
-                          //         fontFamily: 'Arial Rounded'))
                         ])),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(50)),
@@ -670,14 +647,6 @@ class _SinglePropertyState extends State<SingleProperty> {
                             value: 'API Endpoint',
                           )
                         ],
-                        // autovalidateMode: AutovalidateMode.onUserInteraction,
-                        // validator: (value) {
-                        //   if (value!.isEmpty) {
-                        //     return "Property Description is required";
-                        //   } else {
-                        //     return null;
-                        //   }
-                        // },
                         onSaved: (String? value) {
                           websiteType = value!;
                         },
@@ -697,11 +666,6 @@ class _SinglePropertyState extends State<SingleProperty> {
                                     color: Color(0xff606060),
                                     fontFamily: 'Arial Rounded',
                                     fontSize: 14)),
-                            // TextSpan(
-                            //     text: ' *',
-                            //     style: TextStyle(
-                            //         color: Colors.red,
-                            //         fontFamily: 'Arial Rounded'))
                           ])),
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(50)),
@@ -726,7 +690,6 @@ class _SinglePropertyState extends State<SingleProperty> {
                   onPressed: () async {
                     if (formKeyEdit.currentState!.validate()) {
                       formKeyEdit.currentState!.save();
-                      //send data to the db
                       try {
                         await userUrlsRef.child(widget.property['id']).update({
                           'name': websiteName,
