@@ -396,19 +396,30 @@ class _NotificationsState extends State<Notifications> {
                 width: 15,
               ),
               Expanded(
-                child: RichText(
-                    text: TextSpan(children: [
-                  TextSpan(
-                      text: 'Hi ',
-                      style:
-                          TextStyle(color: CustomColors.black, fontSize: 21)),
-                  TextSpan(
-                      text: _userName(),
-                      style: TextStyle(
-                          color: CustomColors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 21)),
-                ])),
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 20),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.arrow_back_ios,
+                        color: CustomColors.grey,
+                        size: 25,
+                      ),
+                      Text(
+                        'Back',
+                        style: TextStyle(
+                            color: CustomColors.grey,
+                            fontSize: 25,
+                            fontWeight: FontWeight.w400),
+                      )
+                    ],
+                  ),
+                ),
               ),
               // IconButton(
               //     onPressed: () {
