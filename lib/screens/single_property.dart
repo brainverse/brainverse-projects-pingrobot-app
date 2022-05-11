@@ -475,198 +475,44 @@ class _SinglePropertyState extends State<SingleProperty> {
                 style: TextStyle(color: CustomColors.white, fontSize: 28),
               ),
             ),
-            Form(
-                key: formKeyEdit,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: websiteNameController,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Property Name is required";
-                        } else {
-                          return null;
-                        }
-                      },
-                      onSaved: (String? value) {
-                        websiteName = value!;
-                      },
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: const Color(0xffF0F0F0),
-                        label: RichText(
-                            text: const TextSpan(children: [
-                          TextSpan(
-                              text: 'Property Name',
-                              style: TextStyle(
-                                  color: Color(0xff606060),
-                                  fontFamily: 'Arial Rounded',
-                                  fontSize: 14)),
-                          TextSpan(
-                              text: ' *',
-                              style: TextStyle(
-                                  color: Colors.red,
-                                  fontFamily: 'Arial Rounded'))
-                        ])),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(50)),
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.black12),
-                            borderRadius: BorderRadius.circular(50)),
-                        focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black12),
-                            borderRadius: BorderRadius.circular(50)),
+            SingleChildScrollView(
+              child: Form(
+                  key: formKeyEdit,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 6.0, left: 11),
+                          child: Text(
+                            'Property Name *',
+                            style: TextStyle(color: CustomColors.white),
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    TextFormField(
-                      controller: websiteUrlController,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "Property Url is required";
-                        } else {
-                          RegExp ipExp = new RegExp(
-                              r"^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$",
-                              caseSensitive: false,
-                              multiLine: false);
-                          RegExp domainExp = RegExp(
-                              r"^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}$");
-                          RegExp urlExp = RegExp(
-                              r"(http|https)://[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?");
-                          if (ipExp.hasMatch(value) ||
-                              domainExp.hasMatch(value) ||
-                              urlExp.hasMatch(value)) {
-                            return null;
+                      TextFormField(
+                        controller: websiteNameController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Property Name is required";
                           } else {
-                            return "Invalid Property Url";
+                            return null;
                           }
-                        }
-                      },
-                      onSaved: (String? value) {
-                        websiteUrl = value!;
-                      },
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: const Color(0xffF0F0F0),
-                        label: RichText(
-                            text: const TextSpan(children: [
-                          TextSpan(
-                              text: 'Property Url',
-                              style: TextStyle(
-                                  color: Color(0xff606060),
-                                  fontFamily: 'Arial Rounded',
-                                  fontSize: 14)),
-                          TextSpan(
-                              text: ' *',
-                              style: TextStyle(
-                                  color: Colors.red,
-                                  fontFamily: 'Arial Rounded'))
-                        ])),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(50)),
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.black12),
-                            borderRadius: BorderRadius.circular(50)),
-                        focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.black12),
-                            borderRadius: BorderRadius.circular(50)),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    TextFormField(
-                      controller: websiteDescriptionController,
-                      onSaved: (String? value) {
-                        websiteDescription = value!;
-                      },
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: const Color(0xffF0F0F0),
-                        label: RichText(
-                            text: const TextSpan(children: [
-                          TextSpan(
-                              text: 'Property Description',
-                              style: TextStyle(
-                                  color: Color(0xff606060),
-                                  fontFamily: 'Arial Rounded',
-                                  fontSize: 14)),
-                        ])),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(50)),
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.black12),
-                            borderRadius: BorderRadius.circular(50)),
-                        focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black12),
-                            borderRadius: BorderRadius.circular(50)),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    SizedBox(
-                      height: 56,
-                      child: DropdownButtonFormField(
-                        icon: Icon(Icons.expand_more),
-                        value: websiteType,
-                        items: [
-                          DropdownMenuItem(
-                            child: Text(''),
-                            value: '',
-                          ),
-                          DropdownMenuItem(
-                            child: Text(
-                              'Wordpress Site',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            value: 'Wordpress Site',
-                          ),
-                          DropdownMenuItem(
-                            child: Text(
-                              'Web App',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            value: 'Web App',
-                          ),
-                          DropdownMenuItem(
-                            child: Text(
-                              'API Endpoint',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            value: 'API Endpoint',
-                          )
-                        ],
+                        },
                         onSaved: (String? value) {
-                          websiteType = value!;
+                          websiteName = value!;
                         },
-                        onChanged: (String? value) {
-                          websiteType = value!;
-                        },
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: CustomColors.primaryColor),
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: const Color(0xffF0F0F0),
-                          label: RichText(
-                              text: const TextSpan(children: [
-                            TextSpan(
-                                text: 'Property Type',
-                                style: TextStyle(
-                                    color: Color(0xff606060),
-                                    fontFamily: 'Arial Rounded',
-                                    fontSize: 14)),
-                          ])),
+                          hintText: 'Enter Property Name',
+                          hintStyle: TextStyle(
+                              color: CustomColors.primaryColor, fontSize: 18),
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(50)),
                           enabledBorder: OutlineInputBorder(
@@ -678,9 +524,185 @@ class _SinglePropertyState extends State<SingleProperty> {
                               borderRadius: BorderRadius.circular(50)),
                         ),
                       ),
-                    ),
-                  ],
-                )),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 6.0, left: 11),
+                          child: Text(
+                            'Property Url *',
+                            style: TextStyle(color: CustomColors.white),
+                          ),
+                        ),
+                      ),
+                      TextFormField(
+                        controller: websiteUrlController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Property Url is required";
+                          } else {
+                            RegExp ipExp = new RegExp(
+                                r"^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$",
+                                caseSensitive: false,
+                                multiLine: false);
+                            RegExp domainExp = RegExp(
+                                r"^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}$");
+                            RegExp urlExp = RegExp(
+                                r"(http|https)://[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?");
+                            if (ipExp.hasMatch(value) ||
+                                domainExp.hasMatch(value) ||
+                                urlExp.hasMatch(value)) {
+                              return null;
+                            } else {
+                              return "Invalid Property Url";
+                            }
+                          }
+                        },
+                        onSaved: (String? value) {
+                          websiteUrl = value!;
+                        },
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: CustomColors.primaryColor),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: const Color(0xffF0F0F0),
+                          hintText: 'Enter Property Url',
+                          hintStyle: TextStyle(
+                              color: CustomColors.primaryColor, fontSize: 18),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(50)),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide:
+                                  const BorderSide(color: Colors.black12),
+                              borderRadius: BorderRadius.circular(50)),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide:
+                                  const BorderSide(color: Colors.black12),
+                              borderRadius: BorderRadius.circular(50)),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 6.0, left: 11),
+                          child: Text(
+                            'Property Description',
+                            style: TextStyle(color: CustomColors.white),
+                          ),
+                        ),
+                      ),
+                      TextFormField(
+                        controller: websiteDescriptionController,
+                        onSaved: (String? value) {
+                          websiteDescription = value!;
+                        },
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: CustomColors.primaryColor),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: const Color(0xffF0F0F0),
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          hintText: 'Enter Property Description',
+                          hintStyle: TextStyle(
+                              color: CustomColors.primaryColor, fontSize: 18),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(50)),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide:
+                                  const BorderSide(color: Colors.black12),
+                              borderRadius: BorderRadius.circular(50)),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black12),
+                              borderRadius: BorderRadius.circular(50)),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 6.0, left: 11),
+                          child: Text(
+                            'Property Type',
+                            style: TextStyle(color: CustomColors.white),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 56,
+                        child: DropdownButtonFormField(
+                          icon: Icon(Icons.expand_more),
+                          value: websiteType,
+                          items: [
+                            DropdownMenuItem(
+                              child: Text(''),
+                              value: '',
+                            ),
+                            DropdownMenuItem(
+                              child: Text(
+                                'Wordpress Site',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              value: 'Wordpress Site',
+                            ),
+                            DropdownMenuItem(
+                              child: Text(
+                                'Web App',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              value: 'Web App',
+                            ),
+                            DropdownMenuItem(
+                              child: Text(
+                                'API Endpoint',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              value: 'API Endpoint',
+                            )
+                          ],
+                          onSaved: (String? value) {
+                            websiteType = value!;
+                          },
+                          onChanged: (String? value) {
+                            websiteType = value!;
+                          },
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: CustomColors.primaryColor),
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: const Color(0xffF0F0F0),
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                            hintText: 'Property Type',
+                            hintStyle: TextStyle(
+                                color: CustomColors.primaryColor, fontSize: 18),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(50)),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    const BorderSide(color: Colors.black12),
+                                borderRadius: BorderRadius.circular(50)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black12),
+                                borderRadius: BorderRadius.circular(50)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )),
+            ),
             SizedBox(
               height: 18,
             ),
