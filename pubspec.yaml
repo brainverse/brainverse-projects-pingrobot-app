@@ -44,6 +44,7 @@ dependencies:
   intl: ^0.17.0
   awesome_notifications: ^0.6.21
   firebase_crashlytics: ^2.7.2
+  url_launcher: ^6.0.12
 
 dev_dependencies:
   flutter_test:

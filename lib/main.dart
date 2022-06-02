@@ -57,7 +57,6 @@ class _MyAppInitState extends State<MyAppInit> {
   @override
   void initState() {
     super.initState();
-    // FirebaseCrashlytics.instance.crash();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;

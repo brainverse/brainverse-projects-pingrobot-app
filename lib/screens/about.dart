@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pingrobot/theme/colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class About extends StatelessWidget {
   const About({Key? key}) : super(key: key);
@@ -21,6 +22,18 @@ class About extends StatelessWidget {
               const Divider(
                 height: 10,
                 thickness: 1,
+              ),
+              ListTile(
+                title: Text('Privacy Policy'),
+                onTap: () async {
+                  var url = Uri.parse(
+                      "https://github.com/brainverse/pingrobot-privacy/blob/main/privacy-policy.md");
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url);
+                  } else {
+                    throw "Cannot launch $url";
+                  }
+                },
               ),
             ],
           )),
