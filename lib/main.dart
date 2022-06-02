@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:pingrobot/screens/initializer.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -59,6 +57,7 @@ class _MyAppInitState extends State<MyAppInit> {
   @override
   void initState() {
     super.initState();
+    // FirebaseCrashlytics.instance.crash();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;
