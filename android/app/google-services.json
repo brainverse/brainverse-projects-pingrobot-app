@@ -8,6 +8,43 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:1095496168132:android:f98c6aecf6a508c4c2cf91",
+        "android_client_info": {
+          "package_name": "co.brainverse.pingrobot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1095496168132-e21a0nbspkcpo16l4e9bcsvjua69ikub.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "co.brainverse.pingrobot",
+            "certificate_hash": "536cfbc57a69e1a207f27843193bc52da5fcdd34"
+          }
+        },
+        {
+          "client_id": "1095496168132-q9s289gp645ugi072gu7qbs57vmfn4b5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQLV7PkYSC_InFU8sbRIyNIDrI2IPWlwc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1095496168132-q9s289gp645ugi072gu7qbs57vmfn4b5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:1095496168132:android:61d8f5c04269b347c2cf91",
         "android_client_info": {
           "package_name": "com.example.pingrobot"

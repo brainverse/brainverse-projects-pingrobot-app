@@ -1,4 +1,4 @@
-package com.example.pingrobot
+package co.brainverse.pingrobot
 
 import io.flutter.embedding.android.FlutterActivity
 

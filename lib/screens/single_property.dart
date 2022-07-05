@@ -1,90 +1,52 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:badges/badges.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pingrobot/screens/about.dart';
+import 'package:pingrobot/screens/home.dart';
 import 'package:pingrobot/screens/notifications.dart';
 import 'package:pingrobot/screens/signin.dart';
-import 'package:pingrobot/screens/single_property.dart';
 import 'package:pingrobot/services/google_signin.dart';
-import 'package:pingrobot/services/time_progress_formatter.dart';
 import 'package:pingrobot/theme/colors.dart';
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class SingleProperty extends StatefulWidget {
+  const SingleProperty({Key? key, required this.property}) : super(key: key);
+  final Map property;
 
   @override
-  State<Home> createState() => _HomeState();
+  State<SingleProperty> createState() => _SinglePropertyState();
 }
 
-class _HomeState extends State<Home> {
+class _SinglePropertyState extends State<SingleProperty> {
   final formKey = GlobalKey<FormState>();
   final formKeyEdit = GlobalKey<FormState>();
+  TextEditingController websiteNameController = TextEditingController();
+  TextEditingController websiteUrlController = TextEditingController();
+  TextEditingController websiteDescriptionController = TextEditingController();
+  String websiteDescription = '';
   String websiteName = '';
   String websiteUrl = '';
-  String websiteDescription = '';
-  String websiteType = 'Web App';
+  String websiteType = '';
   late final userUrlsRef;
   late final database;
   late final userId;
+  late final userNotificationsRef;
 
   @override
   void initState() {
     super.initState();
-    AwesomeNotifications().isNotificationAllowed().then((value) {
-      if (value == false) {
-        showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-                  title: Text(
-                    'Allow Notifications',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: CustomColors.black),
-                    textAlign: TextAlign.center,
-                  ),
-                  content: Text(
-                    'Our app would like to send you notifications',
-                    textAlign: TextAlign.center,
-                  ),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        'Don\'t Allow',
-                        style: TextStyle(color: CustomColors.grey),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        AwesomeNotifications()
-                            .requestPermissionToSendNotifications()
-                            .then((_) => Navigator.pop(context));
-                      },
-                      child: Text(
-                        'Allow',
-                        style: TextStyle(color: CustomColors.primaryColor),
-                      ),
-                    ),
-                  ],
-                ));
-      }
-    });
-
     database = FirebaseDatabase.instance.ref();
     userId = FirebaseAuth.instance.currentUser!.uid;
     userUrlsRef = database.child('userUrls/$userId');
-    _saveDeviceToken();
+    userNotificationsRef = database.child('userNotifications/$userId');
   }
 
   @override
   void dispose() {
-    AwesomeNotifications().actionSink.close();
+    websiteNameController.dispose();
+    websiteUrlController.dispose();
+    websiteDescriptionController.dispose();
     super.dispose();
   }
 
@@ -104,19 +66,30 @@ class _HomeState extends State<Home> {
                 width: 15,
               ),
               Expanded(
-                child: RichText(
-                    text: TextSpan(children: [
-                  TextSpan(
-                      text: 'Hi ',
-                      style:
-                          TextStyle(color: CustomColors.black, fontSize: 21)),
-                  TextSpan(
-                      text: _userName(),
-                      style: TextStyle(
-                          color: CustomColors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 21)),
-                ])),
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 20),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.arrow_back_ios,
+                        color: CustomColors.grey,
+                        size: 25,
+                      ),
+                      Text(
+                        'Back',
+                        style: TextStyle(
+                            color: CustomColors.grey,
+                            fontSize: 25,
+                            fontWeight: FontWeight.w400),
+                      )
+                    ],
+                  ),
+                ),
               ),
               IconButton(
                   onPressed: () {
@@ -181,51 +154,144 @@ class _HomeState extends State<Home> {
             height: 35,
           ),
           Container(
-            height: MediaQuery.of(context).size.height / 4.7,
+            height: MediaQuery.of(context).size.height / 6.3,
             width: MediaQuery.of(context).size.height,
             color: CustomColors.lightGreyScaffold,
             child: Material(
-                child: Column(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 45.0, vertical: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'My Properties',
-                            style: TextStyle(
-                                color: CustomColors.white, fontSize: 20),
-                          ),
-                          IconButton(
-                              onPressed: () {
-                                showModalBottomSheet(
-                                    shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(50),
-                                    )),
-                                    backgroundColor: CustomColors.primaryColor,
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return FractionallySizedBox(
-                                          heightFactor: 0.85,
-                                          child: _addProperty());
-                                    },
-                                    isScrollControlled: true);
-                              },
-                              icon: Icon(
-                                Icons.add_circle,
-                                size: 40,
-                                color: CustomColors.white,
-                              ))
-                        ],
+                    Icon(
+                      Icons.circle,
+                      size: 16,
+                      color: widget.property['live']
+                          ? CustomColors.green
+                          : CustomColors.red,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    SizedBox(
+                      width: 255,
+                      child: Text(
+                        '${widget.property['name']}',
+                        style:
+                            TextStyle(color: CustomColors.white, fontSize: 28),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        websiteNameController.text = widget.property['name'];
+                        websiteUrlController.text = widget.property['url'];
+                        websiteDescriptionController.text =
+                            widget.property['description'];
+                        websiteType = widget.property['type'];
+                        showModalBottomSheet(
+                            shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(50),
+                            )),
+                            backgroundColor: CustomColors.primaryColor,
+                            context: context,
+                            builder: (BuildContext context) {
+                              return FractionallySizedBox(
+                                  heightFactor: 0.85, child: _editProperty());
+                            },
+                            isScrollControlled: true);
+                      },
+                      icon: Icon(
+                        Icons.edit,
+                        size: 28,
+                        color: CustomColors.white,
                       ),
                     ),
                     SizedBox(
-                      height: 8,
+                      width: 5,
                     ),
-                    _urlStatusByNumber()
+                    IconButton(
+                      onPressed: () => showDialog(
+                          context: context,
+                          builder: (context) {
+                            return StatefulBuilder(
+                              builder: (BuildContext context, dialogSetState) =>
+                                  AlertDialog(
+                                content: Text(
+                                  'Are you sure you want to delete this property?',
+                                  textAlign: TextAlign.center,
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text(
+                                      'Cancel',
+                                      style:
+                                          TextStyle(color: CustomColors.grey),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      try {
+                                        await userUrlsRef
+                                            .child(widget.property['id'])
+                                            .remove();
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                          width: 200,
+                                          behavior: SnackBarBehavior.floating,
+                                          duration: const Duration(
+                                              milliseconds: 1500),
+                                          content: Text(
+                                            'Property Successfully Deleted',
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
+                                          ),
+                                        ));
+                                        Navigator.pop(context);
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const Home()),
+                                                (Route<dynamic> route) =>
+                                                    false);
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                          width: 200,
+                                          behavior: SnackBarBehavior.floating,
+                                          duration: const Duration(
+                                              milliseconds: 1500),
+                                          content: Text(
+                                            '$e',
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
+                                          ),
+                                        ));
+                                        Navigator.pop(context);
+                                      }
+                                    },
+                                    child: Text(
+                                      'Yes',
+                                      style: TextStyle(
+                                          color: CustomColors.primaryColor),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                      icon: Icon(
+                        Icons.delete_forever,
+                        size: 28,
+                        color: CustomColors.white,
+                      ),
+                    ),
                   ],
                 ),
                 color: CustomColors.primaryColor,
@@ -243,7 +309,17 @@ class _HomeState extends State<Home> {
                       SizedBox(
                         height: 25,
                       ),
-                      Expanded(child: _urlList())
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 15.0, left: 8.0, bottom: 15.0),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text('Status Log',
+                              style: TextStyle(
+                                  color: CustomColors.grey, fontSize: 28)),
+                        ),
+                      ),
+                      Expanded(child: _logList())
                     ],
                   ),
                   color: CustomColors.white,
@@ -257,357 +333,135 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _urlList() {
+  Widget _logList() {
     return StreamBuilder(
-      stream: userUrlsRef.onValue,
-      builder: (context, snapshot) {
-        final urls = [];
-        if (snapshot.hasData &&
-            (snapshot.data! as DatabaseEvent).snapshot.value != null) {
-          final mapOfUrls =
-              (snapshot.data! as DatabaseEvent).snapshot.value as Map;
-          mapOfUrls.forEach((key, value) {
-            final nextUrl = Map.from(value);
-            nextUrl['id'] = key;
-            urls.add(nextUrl);
-          });
-          urls.sort((a, b) => b['timestamp'].compareTo(a['timestamp']));
-
-          return ListView.builder(
-            itemCount: urls.length,
-            itemBuilder: (context, index) {
-              Map url = urls[index];
-              return Column(
-                children: [
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                        child: SizedBox(
-                          height: MediaQuery.of(context).size.height / 20,
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(10.0),
+        stream: userNotificationsRef.onValue,
+        builder: (context, snapshot) {
+          if (snapshot.hasData &&
+              (snapshot.data! as DatabaseEvent).snapshot.value != null) {
+            final unread = [];
+            final mapOfUrls =
+                (snapshot.data! as DatabaseEvent).snapshot.value as Map;
+            mapOfUrls.forEach((key, value) {
+              final nextUnread = Map.from(value);
+              if (nextUnread['url'] == widget.property['id']) {
+                nextUnread['id'] = key;
+                unread.add(nextUnread);
+              }
+            });
+            if (unread.isEmpty) {
+              return _nothingHere();
+            } else {
+              unread.sort((a, b) => b['timestamp'].compareTo(a['timestamp']));
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: unread.length,
+                itemBuilder: (context, index) {
+                  return Dismissible(
+                      key: Key(unread[index]['id'].toString()),
+                      onDismissed: (direction) {
+                        userNotificationsRef
+                            .child('${unread[index]['id']}')
+                            .remove();
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          width: 200,
+                          behavior: SnackBarBehavior.floating,
+                          duration: const Duration(milliseconds: 1500),
+                          content: Text(
+                            'Log Deleted',
+                            textAlign: TextAlign.center,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                        ));
+                      },
+                      background: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Icon(
+                              Icons.delete,
+                              color: CustomColors.black,
                             ),
-                            child: Image.asset(
-                              'assets/images/laptop_on_desk.jpg',
-                              fit: BoxFit.cover,
+                            SizedBox(
+                              width: 150,
                             ),
-                          ),
+                            Icon(
+                              Icons.delete,
+                              color: CustomColors.black,
+                            ),
+                          ],
                         ),
+                        color: CustomColors.red,
                       ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10.0, top: 15.0, bottom: 15.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    '${url['name']}',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Icon(
-                                    Icons.circle,
-                                    size: 12,
-                                    color: url['live']
-                                        ? CustomColors.green
-                                        : CustomColors.red,
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 6,
-                              ),
-                              url['statusTimestamp'] == null
-                                  ? Text(
-                                      '${url['url']}',
-                                      style:
-                                          TextStyle(color: CustomColors.grey),
-                                    )
-                                  : RichText(
-                                      text: TextSpan(children: [
-                                      TextSpan(
-                                        text: url['live']
-                                            ? 'Online since '
-                                            : 'Offline since ',
-                                        style: TextStyle(
-                                            color: CustomColors.grey,
-                                            fontSize: 13),
-                                      ),
-                                      TextSpan(
-                                        text:
-                                            formatTime(url['statusTimestamp']),
-                                        style: TextStyle(
-                                            color: CustomColors.black,
-                                            fontSize: 13),
-                                      ),
-                                    ]))
-                            ],
-                          ),
+                      child: ListTile(
+                        minLeadingWidth: 10,
+                        leading: Icon(
+                          Icons.circle,
+                          size: 12,
+                          color: unread[index]['status'] == 'OK'
+                              ? CustomColors.green
+                              : CustomColors.red,
                         ),
-                      ),
-                      Row(
-                        children: [
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 15.0),
-                            child: IconButton(
-                                onPressed: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) =>
-                                          SingleProperty(property: url)));
-                                },
-                                icon: Icon(
-                                  Icons.navigate_next,
-                                  color: CustomColors.navigateNextGrey,
-                                  size: 36,
-                                )),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                  Divider(
-                    color: CustomColors.dividerGrey,
-                    endIndent: 25,
-                    indent: 25,
-                  )
-                ],
+                        title: Text('${unread[index]['subtitle']}'),
+                        trailing: Text(
+                            '${DateFormat('dd/MM/yyyy, HH:mm').format(DateTime.fromMillisecondsSinceEpoch(unread[index]['timestamp']))}'),
+                      ));
+                },
               );
-            },
-          );
-        } else if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-              child: CircularProgressIndicator(
-            color: CustomColors.primaryColor,
-          ));
-        } else {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.language,
-                    size: 55,
-                    color: CustomColors.grey,
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    'You\'ve got nothing here.',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 22,
-                        color: CustomColors.black),
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    'Looks like you haven\'t added websites yet. Add some to start monitoring.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: CustomColors.grey,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
+            }
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+                child: CircularProgressIndicator(
+              color: CustomColors.primaryColor,
+            ));
+          } else {
+            return _nothingHere();
+          }
+        });
+  }
+
+  Widget _nothingHere() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.notifications_none_outlined,
+              size: 48,
+              color: CustomColors.grey,
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            Text(
+              'You\'ve got nothing here.',
+              style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 18,
+                  color: CustomColors.black),
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            Text(
+              'Logs will appear here once you have some.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: CustomColors.grey,
+                fontSize: 16,
               ),
             ),
-          );
-        }
-      },
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _urlStatusByNumber() {
-    return StreamBuilder(
-      stream: userUrlsRef.onValue,
-      builder: (context, snapshot) {
-        final onlineUrls = [];
-        final offlineUrls = [];
-
-        if (snapshot.hasData &&
-            (snapshot.data! as DatabaseEvent).snapshot.value != null) {
-          final mapOfUrls =
-              (snapshot.data! as DatabaseEvent).snapshot.value as Map;
-          mapOfUrls.forEach((key, value) {
-            final nextUrl = Map.from(value);
-            if (nextUrl['live'] == true) {
-              onlineUrls.add(nextUrl);
-            } else {
-              offlineUrls.add(nextUrl);
-            }
-          });
-
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Column(
-                children: [
-                  Text(
-                    '${onlineUrls.length}',
-                    style: TextStyle(
-                        color: CustomColors.white,
-                        fontSize: 45,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.circle,
-                        size: 16,
-                        color: CustomColors.green,
-                      ),
-                      SizedBox(
-                        width: 3,
-                      ),
-                      Text(
-                        'Online',
-                        style:
-                            TextStyle(color: CustomColors.white, fontSize: 18),
-                      )
-                    ],
-                  )
-                ],
-              ),
-              Column(
-                children: [
-                  Text(
-                    '${offlineUrls.length}',
-                    style: TextStyle(
-                        color: CustomColors.white,
-                        fontSize: 45,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.circle,
-                        size: 16,
-                        color: CustomColors.red,
-                      ),
-                      SizedBox(
-                        width: 3,
-                      ),
-                      Text(
-                        'Offline',
-                        style:
-                            TextStyle(color: CustomColors.white, fontSize: 18),
-                      )
-                    ],
-                  )
-                ],
-              )
-            ],
-          );
-        } else if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-              child: CircularProgressIndicator(
-            color: CustomColors.primaryColor,
-          ));
-        } else {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Column(
-                children: [
-                  Text(
-                    '0',
-                    style: TextStyle(
-                        color: CustomColors.white,
-                        fontSize: 45,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.circle,
-                        size: 16,
-                        color: CustomColors.green,
-                      ),
-                      SizedBox(
-                        width: 3,
-                      ),
-                      Text(
-                        'Online',
-                        style:
-                            TextStyle(color: CustomColors.white, fontSize: 18),
-                      )
-                    ],
-                  )
-                ],
-              ),
-              Column(
-                children: [
-                  Text(
-                    '0',
-                    style: TextStyle(
-                        color: CustomColors.white,
-                        fontSize: 45,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.circle,
-                        size: 16,
-                        color: CustomColors.red,
-                      ),
-                      SizedBox(
-                        width: 3,
-                      ),
-                      Text(
-                        'Offline',
-                        style:
-                            TextStyle(color: CustomColors.white, fontSize: 18),
-                      )
-                    ],
-                  )
-                ],
-              )
-            ],
-          );
-        }
-      },
-    );
-  }
-
-  _saveDeviceToken() async {
-    final fcmToken = await FirebaseMessaging.instance.getToken();
-    if (fcmToken != null) {
-      database.child('userFcmTokens/$userId').set(fcmToken);
-    }
-  }
-
-  _userName() {
-    return FirebaseAuth.instance.currentUser!.displayName!.split(" ")[0];
-  }
-
-  _addProperty() {
+  _editProperty() {
     return StatefulBuilder(
       builder: (BuildContext context, dialogSetState) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -617,13 +471,13 @@ class _HomeState extends State<Home> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
               child: Text(
-                'Add Property',
+                'Edit Property',
                 style: TextStyle(color: CustomColors.white, fontSize: 28),
               ),
             ),
             SingleChildScrollView(
               child: Form(
-                  key: formKey,
+                  key: formKeyEdit,
                   child: Column(
                     children: [
                       Align(
@@ -637,6 +491,7 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                       TextFormField(
+                        controller: websiteNameController,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -677,12 +532,13 @@ class _HomeState extends State<Home> {
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 6.0, left: 11),
                           child: Text(
-                            'Property Url  *',
+                            'Property Url *',
                             style: TextStyle(color: CustomColors.white),
                           ),
                         ),
                       ),
                       TextFormField(
+                        controller: websiteUrlController,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -730,7 +586,7 @@ class _HomeState extends State<Home> {
                               borderRadius: BorderRadius.circular(50)),
                         ),
                       ),
-                      const SizedBox(
+                      SizedBox(
                         height: 12,
                       ),
                       Align(
@@ -744,6 +600,7 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                       TextFormField(
+                        controller: websiteDescriptionController,
                         onSaved: (String? value) {
                           websiteDescription = value!;
                         },
@@ -786,9 +643,12 @@ class _HomeState extends State<Home> {
                         height: 56,
                         child: DropdownButtonFormField(
                           icon: Icon(Icons.expand_more),
-                          dropdownColor: const Color(0xffF0F0F0),
                           value: websiteType,
                           items: [
+                            DropdownMenuItem(
+                              child: Text(''),
+                              value: '',
+                            ),
                             DropdownMenuItem(
                               child: Text(
                                 'Wordpress Site',
@@ -824,7 +684,8 @@ class _HomeState extends State<Home> {
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: const Color(0xffF0F0F0),
-                            hintText: 'Select Property Type',
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                            hintText: 'Property Type',
                             hintStyle: TextStyle(
                                 color: CustomColors.primaryColor, fontSize: 18),
                             border: OutlineInputBorder(
@@ -849,25 +710,25 @@ class _HomeState extends State<Home> {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () async {
-                    if (formKey.currentState!.validate()) {
-                      formKey.currentState!.save();
+                    if (formKeyEdit.currentState!.validate()) {
+                      formKeyEdit.currentState!.save();
                       try {
-                        await userUrlsRef.push().set({
+                        await userUrlsRef.child(widget.property['id']).update({
                           'name': websiteName,
                           'url': websiteUrl,
                           'description': websiteDescription,
                           'type': websiteType,
-                          'live': true,
-                          'timestamp': DateTime.now().millisecondsSinceEpoch,
-                          'statusTimestamp':
-                              DateTime.now().millisecondsSinceEpoch
+                        });
+                        setState(() {
+                          widget.property['name'] = websiteName;
+                          widget.property['type'] = websiteType;
                         });
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           width: 200,
                           behavior: SnackBarBehavior.floating,
                           duration: const Duration(milliseconds: 1500),
                           content: Text(
-                            'Property Successfully Created',
+                            'Property Successfully Edited',
                             textAlign: TextAlign.center,
                           ),
                           shape: RoundedRectangleBorder(
@@ -904,7 +765,7 @@ class _HomeState extends State<Home> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 20.0),
                     child: Text(
-                      'Publish Property',
+                      'Update Property',
                       style: TextStyle(color: CustomColors.white, fontSize: 16),
                     ),
                   ),

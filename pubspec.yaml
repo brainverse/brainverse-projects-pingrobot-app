@@ -42,7 +42,9 @@ dependencies:
   firebase_messaging: ^11.2.8
   google_sign_in: ^5.2.4
   intl: ^0.17.0
-  flutter_local_notifications: ^9.4.0
+  awesome_notifications: ^0.6.21
+  firebase_crashlytics: ^2.7.2
+  url_launcher: ^6.0.12
 
 dev_dependencies:
   flutter_test:
