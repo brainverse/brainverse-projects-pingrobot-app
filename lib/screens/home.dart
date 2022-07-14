@@ -25,6 +25,7 @@ class _HomeState extends State<Home> {
   String websiteName = '';
   String websiteUrl = '';
   String websiteDescription = '';
+  var frequency = 60;
   String websiteType = 'Web App';
   late final userUrlsRef;
   late final database;
@@ -839,6 +840,88 @@ class _HomeState extends State<Home> {
                           ),
                         ),
                       ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 6.0, left: 11),
+                          child: Text(
+                            'Frequency',
+                            style: TextStyle(color: CustomColors.white),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 56,
+                        child: DropdownButtonFormField(
+                          icon: Icon(Icons.expand_more),
+                          dropdownColor: const Color(0xffF0F0F0),
+                          value: frequency,
+                          items: [
+                            DropdownMenuItem(
+                              child: Text(
+                                'Every Minute',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              value: 1,
+                            ),
+                            DropdownMenuItem(
+                              child: Text(
+                                'Every 5 minutes',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              value: 5,
+                            ),
+                            DropdownMenuItem(
+                              child: Text(
+                                'Every 10 minutes',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              value: 10,
+                            ),
+                            DropdownMenuItem(
+                              child: Text(
+                                'Every 30 minutes',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              value: 30,
+                            ),
+                            DropdownMenuItem(
+                              child: Text(
+                                'Every hour',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              value: 60,
+                            )
+                          ],
+                          onSaved: (value) {
+                            frequency = value! as int;
+                          },
+                          onChanged: (value) {},
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: CustomColors.primaryColor),
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: const Color(0xffF0F0F0),
+                            hintText: 'Select Frequency',
+                            hintStyle: TextStyle(
+                                color: CustomColors.primaryColor, fontSize: 18),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(50)),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    const BorderSide(color: Colors.black12),
+                                borderRadius: BorderRadius.circular(50)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black12),
+                                borderRadius: BorderRadius.circular(50)),
+                          ),
+                        ),
+                      ),
                     ],
                   )),
             ),
@@ -860,7 +943,8 @@ class _HomeState extends State<Home> {
                           'live': true,
                           'timestamp': DateTime.now().millisecondsSinceEpoch,
                           'statusTimestamp':
-                              DateTime.now().millisecondsSinceEpoch
+                              DateTime.now().millisecondsSinceEpoch,
+                          'frequency': frequency
                         });
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           width: 200,
