@@ -8,6 +8,7 @@ import 'package:pingrobot/screens/home.dart';
 import 'package:pingrobot/screens/notifications.dart';
 import 'package:pingrobot/screens/signin.dart';
 import 'package:pingrobot/services/google_signin.dart';
+import 'package:pingrobot/shared/dialogs/payment_alert.dart';
 import 'package:pingrobot/theme/colors.dart';
 
 class SingleProperty extends StatefulWidget {
@@ -33,6 +34,8 @@ class _SinglePropertyState extends State<SingleProperty> {
   late final database;
   late final userId;
   late final userNotificationsRef;
+  late DatabaseReference userPaymentRef;
+  late var paymentSnapshot;
 
   @override
   void initState() {
@@ -181,7 +184,10 @@ class _SinglePropertyState extends State<SingleProperty> {
                       ),
                     ),
                     IconButton(
-                      onPressed: () {
+                      onPressed: () async {
+                        // the next two operations are performed ahead of time to reduce delay when frequency is edited
+                        userPaymentRef = database.child('userPayments/$userId');
+                        paymentSnapshot = await userPaymentRef.get();
                         websiteNameController.text = widget.property['name'];
                         websiteUrlController.text = widget.property['url'];
                         websiteDescriptionController.text =
@@ -759,10 +765,47 @@ class _SinglePropertyState extends State<SingleProperty> {
                             )
                           ],
                           onSaved: (value) {
-                            frequency = value! as int;
+                            if (value == 1 || value == 5) {
+                              if (paymentSnapshot.exists) {
+                                if (DateTime.now().isAfter(
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                        paymentSnapshot.value['expires']))) {
+                                  frequency = 60;
+                                } else {
+                                  frequency = value! as int;
+                                }
+                              } else {
+                                frequency = 60;
+                              }
+                            } else {
+                              frequency = value! as int;
+                            }
                           },
-                          onChanged: (value) {
-                            frequency = value! as int;
+                          onChanged: (value) async {
+                            // check if chosen frequency is 1 or 5 and whether current account is a paid account.
+                            if (value == 1 || value == 5) {
+                              if (paymentSnapshot.exists) {
+                                if (DateTime.now().isAfter(
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                        paymentSnapshot.value['expires']))) {
+                                  // TO IMPLEMENT fallback to default frequency
+                                  // dialogSetState(() {
+                                  //   frequency = 60;
+                                  // });
+                                  // Navigator.pop(context);
+                                  _paymentAlert();
+                                } else {
+                                  frequency = value! as int;
+                                }
+                              } else {
+                                // TO IMPLEMENT fallback to default frequency
+                                // dialogSetState(() {
+                                //   frequency = 60;
+                                // });
+                                // Navigator.pop(context);
+                                _paymentAlert();
+                              }
+                            }
                           },
                           style: TextStyle(
                               fontSize: 18,
@@ -809,6 +852,9 @@ class _SinglePropertyState extends State<SingleProperty> {
                         setState(() {
                           widget.property['name'] = websiteName;
                           widget.property['type'] = websiteType;
+                          widget.property['url'] = websiteUrl;
+                          widget.property['description'] = websiteDescription;
+                          widget.property['frequency'] = frequency;
                         });
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           width: 200,
@@ -873,5 +919,17 @@ class _SinglePropertyState extends State<SingleProperty> {
         ),
       ),
     );
+  }
+
+  _paymentAlert() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        barrierColor: Colors.black87,
+        builder: (context) {
+          return PaymentAlert(
+              title:
+                  'You need a paid plan to monitor at this frequecy. Please upgrade to continue');
+        });
   }
 }

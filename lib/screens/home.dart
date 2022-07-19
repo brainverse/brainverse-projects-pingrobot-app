@@ -10,7 +10,9 @@ import 'package:pingrobot/screens/signin.dart';
 import 'package:pingrobot/screens/single_property.dart';
 import 'package:pingrobot/services/google_signin.dart';
 import 'package:pingrobot/services/time_progress_formatter.dart';
+import 'package:pingrobot/shared/dialogs/payment_alert.dart';
 import 'package:pingrobot/theme/colors.dart';
+import 'package:flutterwave/flutterwave.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -30,6 +32,14 @@ class _HomeState extends State<Home> {
   late final userUrlsRef;
   late final database;
   late final userId;
+  late final userPaymentRef;
+  late var paymentSnapshot;
+  late var urlsSnapshot;
+  String unlockFeatures = 'Let\'s unlock every feature';
+  String moreThanThree =
+      'You need a paid plan to monitor more than 3 properties. Please upgrade to continue';
+  String paidFrequency =
+      'You need a paid plan to monitor at this frequecy. Please upgrade to continue';
 
   @override
   void initState() {
@@ -80,7 +90,26 @@ class _HomeState extends State<Home> {
     database = FirebaseDatabase.instance.ref();
     userId = FirebaseAuth.instance.currentUser!.uid;
     userUrlsRef = database.child('userUrls/$userId');
+    userPaymentRef = database.child('userPayments/$userId');
+    _fetchPaymentState();
+
+    Future.delayed(Duration(milliseconds: 700), () {
+      if (!paymentSnapshot.exists) {
+        WidgetsBinding.instance!
+            .addPostFrameCallback((_) => _paymentAlert(unlockFeatures));
+      } else {
+        if (DateTime.now().isAfter(DateTime.fromMillisecondsSinceEpoch(
+            paymentSnapshot.value['expires']))) {
+          WidgetsBinding.instance!
+              .addPostFrameCallback((_) => _paymentAlert(unlockFeatures));
+        }
+      }
+    });
     _saveDeviceToken();
+  }
+
+  _fetchPaymentState() async {
+    paymentSnapshot = await userPaymentRef.get();
   }
 
   @override
@@ -200,20 +229,83 @@ class _HomeState extends State<Home> {
                                 color: CustomColors.white, fontSize: 20),
                           ),
                           IconButton(
-                              onPressed: () {
-                                showModalBottomSheet(
-                                    shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(50),
-                                    )),
-                                    backgroundColor: CustomColors.primaryColor,
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return FractionallySizedBox(
-                                          heightFactor: 0.85,
-                                          child: _addProperty());
-                                    },
-                                    isScrollControlled: true);
+                              onPressed: () async {
+                                urlsSnapshot = await userUrlsRef.get();
+                                if (paymentSnapshot.exists) {
+                                  //check if expired. if yes - FREE
+                                  if (DateTime.now().isAfter(
+                                      DateTime.fromMillisecondsSinceEpoch(
+                                          paymentSnapshot.value['expires']))) {
+                                    //FREE
+                                    if (urlsSnapshot.exists) {
+                                      if (urlsSnapshot.value.length < 3) {
+                                        //showbottomsheet
+                                        _addPropertyBottomSheet();
+                                      } else {
+                                        _paymentAlert(moreThanThree);
+                                      }
+                                    } else {
+                                      //showbottomsheet
+                                      _addPropertyBottomSheet();
+                                    }
+                                  } else {
+                                    //else check type and assign url # conditions appropriately
+                                    if (paymentSnapshot.value['type'] ==
+                                        'PREMIUM') {
+                                      if (urlsSnapshot.exists) {
+                                        if (urlsSnapshot.value.length < 10) {
+                                          //showbottomsheet
+                                          _addPropertyBottomSheet();
+                                        } else {
+                                          _paymentAlert(
+                                              'You need an AGENCY plan to monitor more than 10 properties. Please upgrade to continue');
+                                        }
+                                      } else {
+                                        //showbottomsheet
+                                        _addPropertyBottomSheet();
+                                      }
+                                    } else {
+                                      if (urlsSnapshot.exists) {
+                                        if (urlsSnapshot.value.length < 50) {
+                                          //showbottomsheet
+                                          _addPropertyBottomSheet();
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                            width: 200,
+                                            behavior: SnackBarBehavior.floating,
+                                            duration: const Duration(
+                                                milliseconds: 1500),
+                                            content: Text(
+                                              'You have exceeded the limit on number of properties',
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(15.0),
+                                            ),
+                                          ));
+                                        }
+                                      } else {
+                                        //showbottomsheet
+                                        _addPropertyBottomSheet();
+                                      }
+                                    }
+                                  }
+                                } else {
+                                  //FREE
+                                  if (urlsSnapshot.exists) {
+                                    if (urlsSnapshot.value.length < 3) {
+                                      //showbottomsheet
+                                      _addPropertyBottomSheet();
+                                    } else {
+                                      _paymentAlert(moreThanThree);
+                                    }
+                                  } else {
+                                    //showbottomsheet
+                                    _addPropertyBottomSheet();
+                                  }
+                                }
                               },
                               icon: Icon(
                                 Icons.add_circle,
@@ -608,6 +700,27 @@ class _HomeState extends State<Home> {
     return FirebaseAuth.instance.currentUser!.displayName!.split(" ")[0];
   }
 
+  _userEmail() {
+    return FirebaseAuth.instance.currentUser!.email;
+  }
+
+  _addPropertyBottomSheet() async {
+    // the next operation is performed here incase user made payment on launch dialog
+    paymentSnapshot = await userPaymentRef.get();
+    return showModalBottomSheet(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+          top: Radius.circular(50),
+        )),
+        backgroundColor: CustomColors.primaryColor,
+        context: context,
+        builder: (BuildContext context) {
+          return FractionallySizedBox(
+              heightFactor: 0.85, child: _addProperty());
+        },
+        isScrollControlled: true);
+  }
+
   _addProperty() {
     return StatefulBuilder(
       builder: (BuildContext context, dialogSetState) => Padding(
@@ -897,9 +1010,38 @@ class _HomeState extends State<Home> {
                             )
                           ],
                           onSaved: (value) {
-                            frequency = value! as int;
+                            if (value == 1 || value == 5) {
+                              if (paymentSnapshot.exists) {
+                                if (DateTime.now().isAfter(
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                        paymentSnapshot.value['expires']))) {
+                                  frequency = 60;
+                                } else {
+                                  frequency = value! as int;
+                                }
+                              } else {
+                                frequency = 60;
+                              }
+                            } else {
+                              frequency = value! as int;
+                            }
                           },
-                          onChanged: (value) {},
+                          onChanged: (value) {
+                            // check if chosen frequency is 1 or 5 and whether current account is a paid account.
+                            if (value == 1 || value == 5) {
+                              if (paymentSnapshot.exists) {
+                                if (DateTime.now().isAfter(
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                        paymentSnapshot.value['expires']))) {
+                                  // TO IMPLEMENT fallback to default frequency
+                                  _paymentAlert(paidFrequency);
+                                }
+                              } else {
+                                // TO IMPLEMENT fallback to default frequency
+                                _paymentAlert(paidFrequency);
+                              }
+                            }
+                          },
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -1009,5 +1151,62 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
+  }
+
+  _paymentAlert(title) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        barrierColor: Colors.black87,
+        builder: (context) {
+          return PaymentAlert(title: title);
+        });
+  }
+
+  _proceedToPayment(BuildContext context, price, type) async {
+    final flutterwave = Flutterwave.forUIPayment(
+        amount: price,
+        currency: FlutterwaveCurrency.KES,
+        context: this.context,
+        publicKey: "FLWPUBK_TEST-80caf38c534c399ffe90a8ad8e04d15b-X",
+        encryptionKey: "FLWSECK_TEST7e2bcb308ab3",
+        email: _userEmail(),
+        fullName: "Test User",
+        txRef: DateTime.now().toIso8601String(),
+        narration: "PingRobot",
+        isDebugMode: true,
+        phoneNumber: '+254',
+        acceptAccountPayment: true,
+        acceptCardPayment: true,
+        acceptUSSDPayment: true,
+        acceptMpesaPayment: true);
+    final response = await flutterwave.initializeForUiPayments();
+    if (response != null) {
+      print(response.data!.status);
+      if (response.data!.status == 'successful') {
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        //   width: 200,
+        //   behavior: SnackBarBehavior.floating,
+        //   duration: const Duration(milliseconds: 1500),
+        //   content: Text(
+        //     'Payment Successful',
+        //     textAlign: TextAlign.center,
+        //   ),
+        //   shape: RoundedRectangleBorder(
+        //     borderRadius: BorderRadius.circular(15.0),
+        //   ),
+        // ));
+        _savePayment(type);
+      }
+    } else {
+      print("No Response!");
+    }
+  }
+
+  _savePayment(type) {
+    database.child('userPayments/$userId').set({
+      'type': type,
+      'expires': DateTime.now().add(Duration(days: 31)).millisecondsSinceEpoch,
+    });
   }
 }
