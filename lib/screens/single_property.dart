@@ -3,11 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pingrobot/screens/about.dart';
+import 'package:pingrobot/components/profile_popup_menu.dart';
 import 'package:pingrobot/screens/home.dart';
 import 'package:pingrobot/screens/notifications.dart';
-import 'package:pingrobot/screens/signin.dart';
-import 'package:pingrobot/services/google_signin.dart';
 import 'package:pingrobot/shared/dialogs/payment_alert.dart';
 import 'package:pingrobot/theme/colors.dart';
 
@@ -112,43 +110,7 @@ class _SinglePropertyState extends State<SingleProperty> {
               SizedBox(
                 width: 10,
               ),
-              PopupMenuButton(
-                child: CircleAvatar(
-                  radius: 20,
-                  backgroundImage: NetworkImage(
-                      FirebaseAuth.instance.currentUser!.photoURL ?? ''),
-                ),
-                onSelected: (result) {
-                  if (result == 'Signout') {
-                    GoogleSigninService googleSigninService =
-                        GoogleSigninService();
-                    googleSigninService.googleSignout().whenComplete(() =>
-                        Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                                builder: (context) => const Signin()),
-                            (Route<dynamic> route) => false));
-                  } else if (result == 'About') {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => const About()));
-                  }
-                },
-                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                  const PopupMenuItem(
-                    value: 'About',
-                    child: ListTile(
-                      leading: Icon(Icons.info_outline),
-                      title: Text('About'),
-                    ),
-                  ),
-                  const PopupMenuItem(
-                    value: 'Signout',
-                    child: ListTile(
-                      leading: Icon(Icons.logout),
-                      title: Text('Signout'),
-                    ),
-                  ),
-                ],
-              ),
+              ProfilePopupMenu(),
               SizedBox(
                 width: 15,
               )

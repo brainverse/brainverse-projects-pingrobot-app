@@ -134,7 +134,7 @@ class _PaymentAlertState extends State<PaymentAlert> {
               height: MediaQuery.of(context).size.height / 3.6,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: 2,
+                itemCount: checked.length,
                 itemBuilder: (BuildContext context, int index) {
                   return SizedBox(
                     // height: MediaQuery.of(context).size.height / 2.9,
