@@ -192,6 +192,7 @@ class _HomeState extends State<Home> {
                           ),
                           IconButton(
                               onPressed: () async {
+                                paymentSnapshot = await userPaymentRef.get();
                                 urlsSnapshot = await userUrlsRef.get();
                                 if (paymentSnapshot.exists) {
                                   //check if expired. if yes - FREE
@@ -988,9 +989,11 @@ class _HomeState extends State<Home> {
                               frequency = value! as int;
                             }
                           },
-                          onChanged: (value) {
+                          onChanged: (value) async {
                             // check if chosen frequency is 1 or 5 and whether current account is a paid account.
                             if (value == 1 || value == 5) {
+                              paymentSnapshot = await userPaymentRef.get();
+
                               if (paymentSnapshot.exists) {
                                 if (DateTime.now().isAfter(
                                     DateTime.fromMillisecondsSinceEpoch(

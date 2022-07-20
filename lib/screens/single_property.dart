@@ -147,9 +147,9 @@ class _SinglePropertyState extends State<SingleProperty> {
                     ),
                     IconButton(
                       onPressed: () async {
-                        // the next two operations are performed ahead of time to reduce delay when frequency is edited
+                        // the next operation is performed ahead of time to reduce delay when frequency is edited
                         userPaymentRef = database.child('userPayments/$userId');
-                        paymentSnapshot = await userPaymentRef.get();
+                        // paymentSnapshot = await userPaymentRef.get();
                         websiteNameController.text = widget.property['name'];
                         websiteUrlController.text = widget.property['url'];
                         websiteDescriptionController.text =
@@ -746,6 +746,8 @@ class _SinglePropertyState extends State<SingleProperty> {
                           onChanged: (value) async {
                             // check if chosen frequency is 1 or 5 and whether current account is a paid account.
                             if (value == 1 || value == 5) {
+                              paymentSnapshot = await userPaymentRef.get();
+
                               if (paymentSnapshot.exists) {
                                 if (DateTime.now().isAfter(
                                     DateTime.fromMillisecondsSinceEpoch(
