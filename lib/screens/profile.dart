@@ -14,7 +14,7 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   List checked = [
     {
-      'value': false,
+      'current': false,
       'cost': '0',
       'type': 'FREE',
       'perks': [
@@ -24,6 +24,7 @@ class _ProfileState extends State<Profile> {
     },
     {
       'value': false,
+      'current': false,
       'cost': '150',
       'type': 'PREMIUM',
       'perks': [
@@ -33,6 +34,7 @@ class _ProfileState extends State<Profile> {
     },
     {
       'value': false,
+      'current': false,
       'cost': '350',
       'type': 'AGENCY',
       'perks': [
@@ -54,7 +56,6 @@ class _ProfileState extends State<Profile> {
     return FirebaseAuth.instance.currentUser!.email;
   }
 
-//DELETE
   Color getColor(Set<MaterialState> states) {
     const Set<MaterialState> interactiveStates = <MaterialState>{
       MaterialState.focused,
@@ -124,7 +125,30 @@ class _ProfileState extends State<Profile> {
     userId = FirebaseAuth.instance.currentUser!.uid;
 
     userPaymentRef = database.child('userPayments/$userId');
-    _fetchPaymentState();
+    _fetchPaymentState().whenComplete(() {
+      if (paymentSnapshot.exists) {
+        if (DateTime.now().isAfter(DateTime.fromMillisecondsSinceEpoch(
+            paymentSnapshot.value['expires']))) {
+          setState(() {
+            checked[0]['current'] = true;
+          });
+        } else {
+          if (paymentSnapshot.value['type'] == 'PREMIUM') {
+            setState(() {
+              checked[1]['current'] = true;
+            });
+          } else {
+            setState(() {
+              checked[2]['current'] = true;
+            });
+          }
+        }
+      } else {
+        setState(() {
+          checked[0]['current'] = true;
+        });
+      }
+    });
   }
 
   // @override
@@ -173,7 +197,7 @@ class _ProfileState extends State<Profile> {
                             children: [
                               Align(
                                 alignment: Alignment.topLeft,
-                                child: index == 0
+                                child: checked[index]['current']
                                     ? Padding(
                                         padding: const EdgeInsets.only(
                                             top: 16.0, bottom: 18.0, left: 3.0),
@@ -183,31 +207,34 @@ class _ProfileState extends State<Profile> {
                                               color: CustomColors.primaryColor),
                                         ),
                                       )
-                                    : Checkbox(
-                                        value: checked[index]['value'],
-                                        checkColor: Colors.white,
-                                        fillColor:
-                                            MaterialStateProperty.resolveWith(
-                                                getColor),
-                                        shape: CircleBorder(),
-                                        onChanged: (value) {
-                                          if (index == 1) {
-                                            setState(() {
-                                              checked[1]['value'] = value;
-                                              if (value == true) {
-                                                checked[2]['value'] = false;
+                                    : index == 0
+                                        ? SizedBox(
+                                            height: 45,
+                                          )
+                                        : Checkbox(
+                                            value: checked[index]['value'],
+                                            checkColor: Colors.white,
+                                            fillColor: MaterialStateProperty
+                                                .resolveWith(getColor),
+                                            shape: CircleBorder(),
+                                            onChanged: (value) {
+                                              if (index == 1) {
+                                                setState(() {
+                                                  checked[1]['value'] = value;
+                                                  if (value == true) {
+                                                    checked[2]['value'] = false;
+                                                  }
+                                                });
+                                              } else {
+                                                setState(() {
+                                                  checked[2]['value'] = value;
+                                                  if (value == true) {
+                                                    checked[1]['value'] = false;
+                                                  }
+                                                });
                                               }
-                                            });
-                                          } else {
-                                            setState(() {
-                                              checked[2]['value'] = value;
-                                              if (value == true) {
-                                                checked[1]['value'] = false;
-                                              }
-                                            });
-                                          }
-                                        },
-                                      ),
+                                            },
+                                          ),
                               ),
                               Text(
                                 checked[index]['type'],
@@ -265,61 +292,62 @@ class _ProfileState extends State<Profile> {
               ),
               Row(
                 children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width / 3,
-                  ),
+                  // SizedBox(
+                  //   width: MediaQuery.of(context).size.width / 3,
+                  // ),
                   Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (checked[1]['value'] == false &&
-                            checked[2]['value'] == false) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            width: 200,
-                            behavior: SnackBarBehavior.floating,
-                            duration: const Duration(milliseconds: 1500),
-                            content: Text(
-                              'You must select an option to proceed',
-                              textAlign: TextAlign.center,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                          ));
-                        } else {
-                          checked.forEach((element) {
-                            if (element['type'] != 'FREE') {
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 3.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (checked[1]['value'] == false &&
+                              checked[2]['value'] == false) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              width: 200,
+                              behavior: SnackBarBehavior.floating,
+                              duration: const Duration(milliseconds: 1500),
+                              content: Text(
+                                'Please select an option to proceed',
+                                textAlign: TextAlign.center,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                            ));
+                          } else {
+                            checked.forEach((element) {
                               if (element['value'] == true) {
                                 var price = element['cost'];
                                 Navigator.pop(context);
                                 _proceedToPayment(
                                     context, price, element['type']);
                               }
-                            }
-                          });
-                        }
-                      },
-                      style: ButtonStyle(
-                        foregroundColor:
-                            MaterialStateProperty.all<Color>(Colors.white),
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            CustomColors.black),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50))),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: Text(
-                          'Upgrade',
-                          style: TextStyle(
-                              color: CustomColors.white, fontSize: 16),
+                            });
+                          }
+                        },
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              CustomColors.black),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50))),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Text(
+                            'Update',
+                            style: TextStyle(
+                                color: CustomColors.white, fontSize: 16),
+                          ),
                         ),
                       ),
                     ),
                   ),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width / 3,
+                    width: MediaQuery.of(context).size.width / 1.6,
                   ),
                 ],
               )

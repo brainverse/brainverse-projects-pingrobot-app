@@ -4,7 +4,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pingrobot/components/profile_popup_menu.dart';
-import 'package:pingrobot/screens/home.dart';
 import 'package:pingrobot/screens/notifications.dart';
 import 'package:pingrobot/shared/dialogs/payment_alert.dart';
 import 'package:pingrobot/theme/colors.dart';
@@ -220,13 +219,7 @@ class _SinglePropertyState extends State<SingleProperty> {
                                           ),
                                         ));
                                         Navigator.pop(context);
-                                        Navigator.of(context)
-                                            .pushAndRemoveUntil(
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const Home()),
-                                                (Route<dynamic> route) =>
-                                                    false);
+                                        Navigator.pop(context);
                                       } catch (e) {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(

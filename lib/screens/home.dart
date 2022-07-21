@@ -89,9 +89,7 @@ class _HomeState extends State<Home> {
     userId = FirebaseAuth.instance.currentUser!.uid;
     userUrlsRef = database.child('userUrls/$userId');
     userPaymentRef = database.child('userPayments/$userId');
-    _fetchPaymentState();
-
-    Future.delayed(Duration(milliseconds: 700), () {
+    _fetchPaymentState().whenComplete(() {
       if (!paymentSnapshot.exists) {
         WidgetsBinding.instance!
             .addPostFrameCallback((_) => _paymentAlert(unlockFeatures));
@@ -103,6 +101,7 @@ class _HomeState extends State<Home> {
         }
       }
     });
+
     _saveDeviceToken();
   }
 

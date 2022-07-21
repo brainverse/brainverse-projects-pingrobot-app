@@ -255,7 +255,7 @@ class _PaymentAlertState extends State<PaymentAlert> {
                         behavior: SnackBarBehavior.floating,
                         duration: const Duration(milliseconds: 1500),
                         content: Text(
-                          'You must select an option to proceed',
+                          'Please select an option to proceed',
                           textAlign: TextAlign.center,
                         ),
                         shape: RoundedRectangleBorder(
