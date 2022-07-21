@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pingrobot/components/profile_popup_menu.dart';
 import 'package:pingrobot/screens/notifications.dart';
-import 'package:pingrobot/shared/dialogs/payment_alert.dart';
+import 'package:pingrobot/dialogs/payment_alert.dart';
 import 'package:pingrobot/theme/colors.dart';
 
 class SingleProperty extends StatefulWidget {

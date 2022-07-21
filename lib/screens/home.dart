@@ -8,7 +8,7 @@ import 'package:pingrobot/components/profile_popup_menu.dart';
 import 'package:pingrobot/screens/notifications.dart';
 import 'package:pingrobot/screens/single_property.dart';
 import 'package:pingrobot/services/time_progress_formatter.dart';
-import 'package:pingrobot/shared/dialogs/payment_alert.dart';
+import 'package:pingrobot/dialogs/payment_alert.dart';
 import 'package:pingrobot/theme/colors.dart';
 import 'package:flutterwave/flutterwave.dart';
 
