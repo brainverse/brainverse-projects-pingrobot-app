@@ -720,7 +720,7 @@ class _SinglePropertyState extends State<SingleProperty> {
                             )
                           ],
                           onSaved: (value) {
-                            if (value == 1 || value == 5) {
+                            if (value == 1 || value == 5 || value == 10) {
                               if (paymentSnapshot.exists) {
                                 if (DateTime.now().isAfter(
                                     DateTime.fromMillisecondsSinceEpoch(
@@ -738,7 +738,7 @@ class _SinglePropertyState extends State<SingleProperty> {
                           },
                           onChanged: (value) async {
                             // check if chosen frequency is 1 or 5 and whether current account is a paid account.
-                            if (value == 1 || value == 5) {
+                            if (value == 1 || value == 5 || value == 10) {
                               paymentSnapshot = await userPaymentRef.get();
 
                               if (paymentSnapshot.exists) {

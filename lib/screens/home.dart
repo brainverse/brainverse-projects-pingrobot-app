@@ -10,7 +10,6 @@ import 'package:pingrobot/screens/single_property.dart';
 import 'package:pingrobot/services/time_progress_formatter.dart';
 import 'package:pingrobot/dialogs/payment_alert.dart';
 import 'package:pingrobot/theme/colors.dart';
-import 'package:flutterwave/flutterwave.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -972,7 +971,7 @@ class _HomeState extends State<Home> {
                             )
                           ],
                           onSaved: (value) {
-                            if (value == 1 || value == 5) {
+                            if (value == 1 || value == 5 || value == 10) {
                               if (paymentSnapshot.exists) {
                                 if (DateTime.now().isAfter(
                                     DateTime.fromMillisecondsSinceEpoch(
@@ -989,8 +988,8 @@ class _HomeState extends State<Home> {
                             }
                           },
                           onChanged: (value) async {
-                            // check if chosen frequency is 1 or 5 and whether current account is a paid account.
-                            if (value == 1 || value == 5) {
+                            // check if chosen frequency is 1 or 5 or 10 and whether current account is a paid account.
+                            if (value == 1 || value == 5 || value == 10) {
                               paymentSnapshot = await userPaymentRef.get();
 
                               if (paymentSnapshot.exists) {
@@ -1125,52 +1124,5 @@ class _HomeState extends State<Home> {
         builder: (context) {
           return PaymentAlert(title: title);
         });
-  }
-
-  _proceedToPayment(BuildContext context, price, type) async {
-    final flutterwave = Flutterwave.forUIPayment(
-        amount: price,
-        currency: FlutterwaveCurrency.KES,
-        context: this.context,
-        publicKey: "FLWPUBK_TEST-80caf38c534c399ffe90a8ad8e04d15b-X",
-        encryptionKey: "FLWSECK_TEST7e2bcb308ab3",
-        email: _userEmail(),
-        fullName: "Test User",
-        txRef: DateTime.now().toIso8601String(),
-        narration: "PingRobot",
-        isDebugMode: true,
-        phoneNumber: '+254',
-        acceptAccountPayment: true,
-        acceptCardPayment: true,
-        acceptUSSDPayment: true,
-        acceptMpesaPayment: true);
-    final response = await flutterwave.initializeForUiPayments();
-    if (response != null) {
-      print(response.data!.status);
-      if (response.data!.status == 'successful') {
-        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        //   width: 200,
-        //   behavior: SnackBarBehavior.floating,
-        //   duration: const Duration(milliseconds: 1500),
-        //   content: Text(
-        //     'Payment Successful',
-        //     textAlign: TextAlign.center,
-        //   ),
-        //   shape: RoundedRectangleBorder(
-        //     borderRadius: BorderRadius.circular(15.0),
-        //   ),
-        // ));
-        _savePayment(type);
-      }
-    } else {
-      print("No Response!");
-    }
-  }
-
-  _savePayment(type) {
-    database.child('userPayments/$userId').set({
-      'type': type,
-      'expires': DateTime.now().add(Duration(days: 31)).millisecondsSinceEpoch,
-    });
   }
 }
