@@ -169,6 +169,7 @@ class _ProfileState extends State<Profile> {
                   color: CustomColors.primaryColor,
                 ))
               : Column(
+                  // mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(
                       height: 8.0,
@@ -185,16 +186,14 @@ class _ProfileState extends State<Profile> {
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4.0, bottom: 10.0),
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height / 3.6,
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 4.0, bottom: 10.0),
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount: checked.length,
                           itemBuilder: (BuildContext context, int index) {
                             return SizedBox(
-                              // height: MediaQuery.of(context).size.height / 2.9,
                               width: MediaQuery.of(context).size.width / 1.8,
                               child: Card(
                                 shape: RoundedRectangleBorder(
@@ -376,6 +375,9 @@ class _ProfileState extends State<Profile> {
                           width: MediaQuery.of(context).size.width / 1.6,
                         ),
                       ],
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 2.6,
                     )
                   ],
                 )),

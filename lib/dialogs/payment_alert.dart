@@ -131,7 +131,7 @@ class _PaymentAlertState extends State<PaymentAlert> {
           Padding(
             padding: const EdgeInsets.only(top: 4.0, bottom: 10.0),
             child: SizedBox(
-              height: MediaQuery.of(context).size.height / 3.6,
+              height: MediaQuery.of(context).size.height / 3.2,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: checked.length,
