@@ -298,7 +298,9 @@ class _PaymentAlertState extends State<PaymentAlert> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Cancel',
+              widget.title.split(' ')[3] == 'AGENCY'
+                  ? 'Proceed with Premium'
+                  : 'Proceed with Free',
               style: TextStyle(color: CustomColors.primaryColor, fontSize: 16),
             ),
           ),
